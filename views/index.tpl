@@ -88,6 +88,12 @@
         console.log("logout");
     }
   </script>
+  <div class="index">
+      一级分类:
+      {{.TopCategories}}
+      首页图书：
+      {{.HomeBooks}}
+  </div>
   <footer>
     <div class="author">
       Official website:

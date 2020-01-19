@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>更新图书</title>
+</head>
+<body>
+<form id="UpdateBook" name="UpdateBook">
+    <input id="book_name" name="book_name" value={{.BookName}} type="text"/>
+    <input id="description" name="description" value={{.Description}} type="text"/>
+    <input id="catalog" name="catalog" value={{.Catalog}} type="text"/>
+    <input id="sort" name="sort" value={{.Sort}} type="number"/>
+    <input id="author" name="author" value={{.Author}} type="text"/>
+    <input id="book_count" name="book_count" value={{.BookCount}} type="number"/>
+    <input id="category_id" name="category_id" value={{.CategoryId}} type="number"/>
+</form>
+    <input type="button" value="更新" onclick="updatebook()"/>
+<script type="text/javascript">
+    function updatebook() {
+        //var identify = document.getElementById("identify").value;
+        //get identify params from url
+        //var identify = getQueryVariable("identify");
+        //alert(identify);
+        //var url = "http://localhost:8080/updatebook/"+identify;
+        //alert(url);
+        var frm = document.getElementById("UpdateBook");
+        frm.method="post";
+        frm.submit();
+    }
+    function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            if(pair[0] == variable) {return pair[1];}
+        }
+        return (false)
+    }
+</script>
+</body>
+</html>

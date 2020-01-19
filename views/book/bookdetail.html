@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图书详情</title>
+</head>
+<body>
+{{.Books}}
+{{range $idx,$book_record:=.BookRecords}}
+    <div>
+        {{$book_record}}
+        <input type="button" id="LendBook" name="LendBook" value="借阅" onclick="var book_id={{$book_record.Id}}; lend_book(book_id)"/>
+        <input type="button" id="ReturnBook" name="ReturnBook" value="归还" onclick="var book_id={{$book_record.Id}}; return_book(book_id)"/>
+            <script type="text/javascript">
+                function lend_book(book_id) {
+                    var url= "http://localhost:8080/lendbook/"+book_id;
+                    alert(url);
+                    //window.open(url);
+                    window.location.href=url;
+                }
+                function return_book(book_id) {
+                    var url="http://localhost:8080/returnbook/"+book_id;
+                    alert(url);
+                    window.location.href=url;
+                }
+            </script>
+    </div>
+{{end}}
+</body>
+</html>

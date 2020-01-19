@@ -8,12 +8,12 @@ import (
 
 type AuthController struct {
 	BaseController
+	Muser models.User
 }
 
 func (c *AuthController) Prepare() {
-	u := &models.User{}
 	if cookie, ok := c.GetSecureCookie(secretCookie, "user"); ok {
-		if err := utils.Decode(cookie, *u); err == nil {
+		if err := utils.Decode(cookie, &c.Muser); err == nil && c.Muser.Id > 0 {
 			return
 		}
 	}
