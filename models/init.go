@@ -7,7 +7,7 @@ import (
 
 func init() {
 	//orm.RegisterModel(new(User))
-	orm.RegisterModelWithPrefix("bookms_user_", new(User))
+	orm.RegisterModelWithPrefix("bookms_user_", new(User), new(Favorite), new(Score), new(Comments))
 	orm.RegisterModelWithPrefix("bookms_", new(Book))
 	orm.RegisterModelWithPrefix("bookms_", new(Category))
 	orm.RegisterModelWithPrefix("bookms_", new(BookCategory))
@@ -36,6 +36,18 @@ func TNBookIdentify() string {
 
 func TNBookRecord() string {
 	return "bookms_book_record"
+}
+
+func TNFavorite() string {
+	return "bookms_user_favorite"
+}
+
+func TNComments() string {
+	return "bookms_user_comments"
+}
+
+func TNScore() string {
+	return "bookms_user_score"
 }
 
 func GetOrm(alias string) orm.Ormer {

@@ -13,7 +13,9 @@ func init() {
     //user
     beego.Router("/login", &controllers.LoginController{}, "*:Login")
     beego.Router("/logout",&controllers.LoginController{}, "*:Logout")
-    beego.Router("/register", &controllers.LoginController{}, "Get:Register;Post:RegisterDo")
+    beego.Router("/register", &controllers.LoginController{}, "get:Register;post:RegisterDo")
+    beego.Router("/favoritedo/:identify", &controllers.UserController{}, "*:FavoriteDo")
+    beego.Router("/bookcomment/:identify", &controllers.UserController{}, "*:AddCommentAndScore")
 
     //category
     beego.Router("/addcategory", &controllers.CategoryController{}, "*:AddCategory")
@@ -25,5 +27,5 @@ func init() {
     beego.Router("/deletebook/:book_id", &controllers.BookController{}, "*:DeleteBookById")
     beego.Router("/lendbook/:book_id", &controllers.BookController{}, "*:LendBookById")
     beego.Router("/returnbook/:book_id", &controllers.BookController{}, "*:ReturnBookById")
-    beego.Router("/bookdetail/:identify", &controllers.GetBookController{}, "Get:GetBooksByIdentify")
+    beego.Router("/bookdetail/:identify", &controllers.GetBookController{}, "get:GetBooksByIdentify")
 }

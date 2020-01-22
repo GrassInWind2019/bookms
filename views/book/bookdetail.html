@@ -6,6 +6,40 @@
 </head>
 <body>
 {{.Books}}
+<div>
+    <if condition="{{.IsFavorite}} eq 1">
+        <input type="button" id="Favorite" name="Favorite" value="取消收藏" onclick="var identify={{.Books.Identify}}; favorite_do(identify)">
+        <else>
+            <input type="button" id="Favorite" name="Favorite" value="收藏" onclick="var identify={{.Books.Identify}}; favorite_do(identify)">
+        </else>
+    </if>
+
+    <script type="text/javascript">
+        function favorite_do(identify) {
+            var url = "http://localhost:8080/favoritedo/"+identify;
+            alert(url);
+            window.location.href=url;
+        }
+    </script>
+</div>
+<form id="comment_form" name="comment_form" method="post" action="/bookcomment/{{.Books.Identify}}">
+    <div>
+        <input type="number" id="score" name="score" value="" placeholder="评分" required/>
+    </div>
+    <div>
+        <input type="text" id="comment" name="comment" value="" placeholder="评论" required/>
+    </div>
+    <div>
+        <input type="submit" value="发表评论">
+    </div>
+</form>
+<div>
+{{range $idx,$book_comment:=.BookComments}}
+    <div>
+    {{$book_comment}}
+    </div>
+{{end}}
+</div>
 {{range $idx,$book_record:=.BookRecords}}
     <div>
         {{$book_record}}

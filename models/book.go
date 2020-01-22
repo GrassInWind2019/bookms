@@ -23,9 +23,9 @@ type Book struct {
 	DocCount int `orm:"column(doc_count)" json:"doc_count"`
 	CommentCount int `orm:"type(int)" json:"comment_count"`
 	FavoriteCount int `orm:"column(favorite_count);type(int);default(0)" json:"favorite_count"`  //收藏次数
-	Score int `orm:"default(0)" json:"score"`
+	AverageScore int `orm:"column(average_score);default(0)" json:"average_score"`
 	ScoreCount int `orm:"column(score_count);default(0)" json:"score_count"`
-	CommentPeopleCount int `orm:"column(comment_people_count);default(0)" json:"comment_people_count"`
+	//CommentPeopleCount int `orm:"column(comment_people_count);default(0)" json:"comment_people_count"`
 	Author string `orm:"size(100)" json:"author"`
 	BookCount int `orm:"column(book_count)" json:"book_count"`
 }

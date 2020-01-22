@@ -14,7 +14,7 @@ create table if not exists `bookms_book` (
 `doc_count` int(11) not null default '0',
 `comment_count` int(11) not null default '0',
 `favorite_count` int(11) not null default '0',
-`score` int(11) not null default '0',
+`average_score` int(11) not null default '0',
 `score_count` int(11) not null default '0',
 `comment_people_count` int(11) not null default '0',
 `author` varchar(50) not null,
