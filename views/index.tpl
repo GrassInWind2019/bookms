@@ -39,6 +39,23 @@
       font-weight: normal;
       text-shadow: 0px 1px 2px #ddd;
     }
+    .login {
+      background-repeat: no-repeat;
+      background-position: right;
+      text-align: -webkit-right;
+    }
+    .top_category {
+      width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+    .index_books {
+      width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
 
     header {
       padding: 100px 0;
@@ -75,24 +92,49 @@
 
 <body>
   <header>
+    <div class="login">
+      {{if eq .IsLogin 1}}
+      <input type="button" value="登出" onclick="logout()"/>
+        {{else}}
+        <input type="button" value="登录" onclick="login()"/>
+      {{end}}
+    </div>
     <h1 class="logo">Welcome to Beego</h1>
     <div class="description">
       Beego is a simple & powerful Go web framework which is inspired by tornado and sinatra.
     </div>
-    <input type="button" value="登出" onclick="logout()"/>
   </header>
   <script type="text/javascript">
     function logout() {
         var url = "http://localhost:8080/logout";
-        window.open(url);
+        //window.open(url);
+        alert(url);
+        window.location.href=url;
         console.log("logout");
+    }
+    function login() {
+        var url="http://localhost:8080/login";
+        window.location.href=url;
+        console.log("login")
     }
   </script>
   <div class="index">
+    <div class="top_category">
       一级分类:
-      {{.TopCategories}}
+      {{range $idx,$TopCategory := .TopCategories}}
+      <div>
+        {{$TopCategory}}
+      </div>
+      {{end}}
+    </div>
+    <div class="index_books">
       首页图书：
-      {{.HomeBooks}}
+      {{range $idx,$HomeBook :=.HomeBooks}}
+        <div>
+          {{$HomeBook}}
+        </div>
+      {{end}}
+    </div>
   </div>
   <footer>
     <div class="author">

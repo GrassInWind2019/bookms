@@ -43,15 +43,17 @@ func (c *LoginController) Login() {
 		if err := c.login(u.Id); err != nil {
 			c.JsonResult(500, "Internal error")
 		}
-		c.JsonResult(200, "登录成功")
+		c.Success("登录成功",beego.URLFor("HomeController.Index"), 3)
+		//c.Redirect(beego.URLFor("HomeController.Index"), 301)
 	}
 }
 
 func (c *LoginController) Logout() {
-	logs.Debug("logout")
-	c.SetSecureCookie(secretCookie, "user", "", -1)
-	c.Redirect(beego.URLFor("MainController.Get"), 302)
-	c.StopRun()
+	logs.Info("logout")
+	c.SetSecureCookie(secretCookie, "user", "", 0)
+	//c.JsonResult(200, "登出成功")
+	c.Success("登出成功",beego.URLFor("HomeController.Index"), 3)
+	//c.StopRun()
 }
 
 func (c *LoginController) Register() {
@@ -94,7 +96,8 @@ func (c *LoginController) RegisterDo() {
 		c.JsonResult(400, err.Error())
 	}
 	c.login(u.Id)
-	c.JsonResult(200, "注册成功")
+	//c.JsonResult(200, "注册成功")
+	c.Success("注册成功", beego.URLFor("HomeController.Index"), 3)
 }
 
 func (c *LoginController) login(id int) (error) {

@@ -3,16 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>注册</title>
+    <style type="text/css">
+        body {
+            margin: 0px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 18px;
+            line-height: 20px;
+            background-color: #fff;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-<form name="registerForm" method="post" id="registerForm">
-    <input id="Account" type="text" name="Account" placeholder="账号"/>
-    <input id="Nickname" type="text" name="Nickname" placeholder="昵称"/>
-    <input id="Password1" type="password" name="Password1" autocomplete="off" placeholder="初始密码"/>
-    <input id="Password2" type="password" name="Password2" autocomplete="off" placeholder="确认密码"/>
-    <input id="Email" type="email" name="Email" placeholder="邮箱"/>
-    <input id="Phone" type="text" name="Phone" placeholder="电话"/>
-    <input id="Biography" type="text" name="Biography" placeholder="个人简介">
+<form class="register_form" name="registerForm" method="post" id="registerForm">
+    <div>
+        <input id="Account" type="text" name="Account" placeholder="账号"/>
+    </div>
+    <div>
+        <input id="Nickname" type="text" name="Nickname" placeholder="昵称"/>
+    </div>
+    <div>
+        <input id="Password1" type="password" name="Password1" autocomplete="off" placeholder="初始密码"/>
+    </div>
+    <div>
+        <input id="Password2" type="password" name="Password2" autocomplete="off" placeholder="确认密码"/>
+    </div>
+    <div>
+        <input id="Email" type="email" name="Email" placeholder="邮箱"/>
+    </div>
+    <div>
+        <input id="Phone" type="text" name="Phone" placeholder="电话"/>
+    </div>
+    <div>
+        <input id="Biography" type="text" name="Biography" placeholder="个人简介">
+    </div>
 </form>
 <input type="button" value="提交" onclick="register()"/>
 <script type="text/javascript">

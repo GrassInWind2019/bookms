@@ -6,6 +6,8 @@ import (
 	"testing"
 	"runtime"
 	"path/filepath"
+	_ "bookms/init"
+	_ "bookms/models"
 	_ "bookms/routers"
 
 	"github.com/astaxie/beego"

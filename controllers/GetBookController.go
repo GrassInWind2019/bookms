@@ -11,6 +11,14 @@ type GetBookController struct {
 	Muser models.User
 }
 
+//type BookRecordStatus int
+//
+//const(
+//	CannotLend BookRecordStatus = iota
+//	CanLend
+//	CanReturn
+//)
+
 func (c *GetBookController) Prepare() {
 	if cookie, ok := c.GetSecureCookie(secretCookie, "user"); ok {
 		if err := utils.Decode(cookie, &c.Muser); err == nil && c.Muser.Id > 0 {
@@ -41,7 +49,7 @@ func (c *GetBookController) GetBooksByIdentify() {
 	}
 	c.Data["BookRecords"] = book_records
 	c.Data["Books"] = books[0]
-	//c.JsonResult(200, "OK")
+	isScored := 0
 	if c.Muser.Id > 0 {
 		fav := models.Favorite{
 			Identify:identify,
@@ -49,17 +57,36 @@ func (c *GetBookController) GetBooksByIdentify() {
 		}
 		isFav,err := fav.IsFavorite()
 		if err != nil {
-			c.Data["IsFavorite"] = false
+			//c.Data["IsFavorite"] = false
+			c.Data["IsFavorite"] = 0
 		} else {
-			c.Data["IsFavorite"] = isFav
+			//c.Data["IsFavorite"] = isFav
+			if isFav {
+				c.Data["IsFavorite"] = 1
+			} else {
+				c.Data["IsFavorite"] = 0
+			}
+		}
+		scoreObj := models.Score{
+			UserId:c.Muser.Id,
+			Identify:identify,
+		}
+		_, err = scoreObj.GetBookScore()
+		if err != nil {
+			isScored = 1
 		}
 	} else {
-		c.Data["IsFavorite"] = false
+		c.Data["IsFavorite"] = 0
 	}
-	book_comments, err := new(models.Comments).GetBookCommentsAndScores(identify, 1, 10)
+	book_comments, err := new(models.Comments).GetBookCommentsAndScores(identify, 1, 5)
 	if err != nil {
 		//c.JsonResult(500, err.Error())
 		logs.Debug("GetBookCommentsAndScores: ", err.Error())
 	}
 	c.Data["BookComments"] = book_comments
+	c.Data["UserId"] = c.Muser.Id
+	c.Data["IsScored"] = isScored
+	c.Data["ScoreNum"] = book_comments[0].Score / 10
+	logs.Debug("UserId: ", c.Muser.Id)
+	logs.Debug(book_records)
 }

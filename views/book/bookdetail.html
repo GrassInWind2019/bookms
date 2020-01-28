@@ -3,16 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <title>图书详情</title>
+    <style type="text/css">
+        *,body {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        body {
+            margin: 0px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 20px;
+            background-color: #fff;
+        }
+        .book {
+            width: 960px;
+            height: 40px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            font-size: 20px;
+            line-height: 28px;
+        }
+        .favorite_button_area {
+            width:60px;
+            height: 40px;
+            background-position: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .favorite_button {
+            width: 30px;
+            height: 30px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            background-color: tomato;
+        }
+        .comment_form {
+            width: 480px;
+            height: 240px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            font-size: 20px;
+            line-height: 28px;
+        }
+        .comments_submit_button {
+            width: 80px;
+            height: 40px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            background-color: forestgreen;
+        }
+        .comments{
+            width: 960px;
+            height: 240px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            font-size: 16px;
+            line-height: 24px;
+        }
+        .comments_title {
+            font-size: 24px;
+            line-height: 32px;
+        }
+        .comments_body {
+            font-size: 16px;
+            line-height: 24px;
+        }
+        .book_records {
+            width: 960px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+        .book_records_title {
+            font-size: 24px;
+            line-height: 32px;
+        }
+        .book_records_body {
+            font-size: 16px;
+            line-height: 32px;
+        }
+        .lend_button {
+            width: 48px;
+            height: 24px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            background-color: forestgreen;
+        }
+        .return_button {
+            width: 48px;
+            height: 24px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            background-color: forestgreen;
+        }
+    </style>
 </head>
 <body>
-{{.Books}}
-<div>
-    <if condition="{{.IsFavorite}} eq 1">
-        <input type="button" id="Favorite" name="Favorite" value="取消收藏" onclick="var identify={{.Books.Identify}}; favorite_do(identify)">
-        <else>
-            <input type="button" id="Favorite" name="Favorite" value="收藏" onclick="var identify={{.Books.Identify}}; favorite_do(identify)">
-        </else>
-    </if>
+<div class="book">
+    {{.Books}}
+</div>
+<div class="favorite_button_area">
+    <!-- input type="button" id="Favorite1" name="Favorite1" value="取消收藏" onclick="var identify={{.Books.Identify}}; favorite_do(identify)"/ -->
+    <!-- input type="button" id="Favorite2" name="Favorite2" value="收藏" onclick="var identify={{.Books.Identify}}; favorite_do(identify)"/ -->
+    {{if eq .IsFavorite 0}}
+        <input class="favorite_button" type="button" id="Favorite1" name="Favorite1" value="收藏" onclick="var identify={{.Books.Identify}}; favorite_do(identify)"/>
+    {{else}}
+        <input class="favorite_button" type="button" id="Favorite2" name="Favorite2" value="取消收藏" onclick="var identify={{.Books.Identify}}; favorite_do(identify)"/>
+    {{end}}
 
     <script type="text/javascript">
         function favorite_do(identify) {
@@ -22,29 +127,52 @@
         }
     </script>
 </div>
-<form id="comment_form" name="comment_form" method="post" action="/bookcomment/{{.Books.Identify}}">
+<form class="comment_form" id="comment_form" name="comment_form" method="post" action="/bookcomment/{{.Books.Identify}}">
+    {{if compare .IsScored 0}}
+        <div>
+            评分:<input type="number" id="score" name="score" value="" placeholder="评分" required/>
+        </div>
+    {{else}}
+        <div>
+            评分：{{.ScoreNum}}
+        </div>
+    {{end}}
     <div>
-        <input type="number" id="score" name="score" value="" placeholder="评分" required/>
+        <!-- input type="text" id="comment" name="comment" value="" placeholder="评论" required/ -->
+        评论:<textarea id="comment" name="comment" value="" placeholder="评论" cols="30" rows="10"></textarea><br/>
     </div>
     <div>
-        <input type="text" id="comment" name="comment" value="" placeholder="评论" required/>
-    </div>
-    <div>
-        <input type="submit" value="发表评论">
+        <input class="comments_submit_button" type="submit" value="发表评论">
     </div>
 </form>
-<div>
+<div class="comments">
+    <div class="comments_title">
+        本书评论
+    </div>
 {{range $idx,$book_comment:=.BookComments}}
-    <div>
+    <div class="comments_body">
     {{$book_comment}}
     </div>
 {{end}}
 </div>
-{{range $idx,$book_record:=.BookRecords}}
-    <div>
+<div class="book_records">
+    <div class="book_records_title">
+        本书借阅记录
+    </div>
+    {{range $idx,$book_record:=.BookRecords}}
+        <div class="book_records_body">
         {{$book_record}}
-        <input type="button" id="LendBook" name="LendBook" value="借阅" onclick="var book_id={{$book_record.Id}}; lend_book(book_id)"/>
-        <input type="button" id="ReturnBook" name="ReturnBook" value="归还" onclick="var book_id={{$book_record.Id}}; return_book(book_id)"/>
+                {{if le $book_record.UserId 0}}
+                    <input class="lend_button" type="button" id="LendBook" name="LendBook" value="借阅" onclick="var book_id={{$book_record.Id}}; lend_book(book_id)"/>
+                {{else}}
+                    {{if eq $book_record.UserId $.UserId}}
+                        <input class="return_button" type="button" id="ReturnBook" name="ReturnBook" value="归还" onclick="var book_id={{$book_record.Id}}; return_book(book_id)"/>
+                    {{else}}
+                        <font color="red">
+                            不可借
+                        </font>
+                    {{end}}
+                {{end}}
             <script type="text/javascript">
                 function lend_book(book_id) {
                     var url= "http://localhost:8080/lendbook/"+book_id;
@@ -58,7 +186,8 @@
                     window.location.href=url;
                 }
             </script>
-    </div>
-{{end}}
+        </div>
+    {{end}}
+</div>
 </body>
 </html>

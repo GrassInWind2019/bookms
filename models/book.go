@@ -37,7 +37,7 @@ func (m *Book) GetBooksByCategory(category, page, pagesize int, fields ...string
 	fieldStr := "b."+strings.Join(fields, ",b.")
 	//select * from bookms_book b left join bookms_book_category c on b.id = c.book_id where b.status=0 and c.category_id=1 order by sort limit 0,10
 	sqlFmt := "select %v from " + TNBook() + " b left join " + TNBookCategory() +
-	" c on b.id=c.book_id where b.status=0 and c.category_id=" + strconv.Itoa(category)
+	" c on b.identify=c.identify where c.category_id=" + strconv.Itoa(category)
 	sql := fmt.Sprintf(sqlFmt, fieldStr)
 	sql = sql + " order by sort limit %d,%d"
 	sql = fmt.Sprintf(sql, (page-1)*pagesize,pagesize)

@@ -18,6 +18,7 @@ func (m *Comments) AddComment() error {
 	if "" == m.Identify || m.UserId <= 0 || "" == m.Content {
 		return errors.New("Invalid arguments")
 	}
+	m.CreateTime = time.Now()
 	o := GetOrm("uw")
 	_, err := o.Insert(m)
 	return err
@@ -40,7 +41,7 @@ type BookComment struct {
 	Role int `json:"role"`
 	RoleName string `json:"role_name"`
 	Content string `json:"content"`
-	TimeCreate time.Time `json:"time_create"`
+	CreateTime time.Time `json:"time_create"`
 }
 
 func (m *Comments) GetBookCommentsAndScores(identify string, page, page_size int) (book_comments []BookComment, err error) {
@@ -48,7 +49,7 @@ func (m *Comments) GetBookCommentsAndScores(identify string, page, page_size int
 		err = errors.New("Invalid identify")
 		return
 	}
-	sql := "select c.content,c.create_time,s.score,u.id,u.avatar,u.nickname,u.role from bookms_user_comments c" +
+	sql := "select c.content,c.create_time,s.score,u.id as user_id,u.avatar,u.nickname,u.role from bookms_user_comments c" +
 		" left join bookms_user_score s on c.identify=s.identify left join bookms_user_user u on " +
 		"u.id=s.user_id where c.identify="+identify+" and s.identify="+identify+" order by c.id desc limit %v offset %v"
 	sql = fmt.Sprintf(sql, page_size, (page - 1)*page_size)
