@@ -34,6 +34,13 @@ func getRoleName(role int) string {
 	}
 }
 
+func (m *User) IsAdmin() bool {
+	if 0 == m.Role {
+		return true
+	}
+	return false
+}
+
 func (m *User) Add() error {
 	if strings.Count(m.Nickname, "") > 20 {
 		return errors.New("昵称长度不能超过20个字")

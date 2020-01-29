@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"bookms/models"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"strconv"
 	"time"
@@ -72,7 +73,8 @@ func (c *BookController) AddBook() {
 		if err = new(models.BookRecord).AddBookRecords(book_count, identify, positions); err != nil {
 			c.JsonResult(500, err.Error())
 		}
-		c.JsonResult(200, "添加成功")
+		//c.JsonResult(200, "添加成功")
+		c.Success("添加成功", beego.URLFor("UserController.GetUserCenterInfo"),1)
 	}
 }
 

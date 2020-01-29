@@ -3,19 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <title>添加图书</title>
+    <style type="text/css">
+        .addbook {
+            margin: 0px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 20px;
+            background-color: #fff;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <form id="AddBook" name="AddBook" method="post" action="/addbook">
-        <input id="book_name" name="book_name" value="书名" type="text"/>
-        <input id="identify" name="identify" value="图书标识" type="text"/>
-        <input id="description" name="description" value="本书简介" type="text"/>
-        <input id="catalog" name="catalog" value="目录" type="text"/>
-        <input id="sort" name="sort" value="排序" type="number"/>
-        <input id="author" name="author" value="作者" type="text"/>
-        <input id="book_count" name="book_count" value="书本数量" type="number"/>
-        <input id="category_id" name="category_id" value="" type="number"/>
-        <input id="store_position" name="store_position" value="1F A书架" type="text"/>
-        <input type="submit" value="添加"/>
+    <form class="addbook" id="AddBook" name="AddBook" method="post" action="/addbook">
+        <div style="height: 32px">
+            <font style="width: auto">
+                书名
+            </font>
+            <input id="book_name" name="book_name" value="" type="text"/>
+        </div>
+        <div style="height: 32px">
+            <font style="width: auto">
+                图书标识
+            </font>
+            <input id="identify" name="identify" value="" type="text"/>
+        </div>
+        <div style="height: 160px">
+            {{/*本书简介<input id="description" name="description" value="本书简介" type="text"/>*/}}
+            <textarea id="description" name="description" placeholder="请输入本书简介" cols="50" rows="10" maxlength="1000"></textarea>
+        </div>
+        <div style="height: 160px">
+            {{/*目录<input id="catalog" name="catalog" value="目录" type="text"/>*/}}
+            <textarea id="catalog" name="catalog" placeholder="请输入目录内容" cols="50" rows="10" maxlength="5000"></textarea>
+        </div>
+        <div style="height: 32px">
+            <font style="width: auto">
+                排序id
+            </font>
+            <input id="sort" name="sort" value="排序" type="number"/>
+        </div>
+        <div style="height: 32px">
+            <font style="width: auto">
+                作者
+            </font>
+            <input id="author" name="author" value="作者" type="text"/>
+        </div>
+        <div style="height: 32px">
+            <font style="width: auto">
+                书本数量
+            </font>
+            <input id="book_count" name="book_count" value="书本数量" type="number"/>
+        </div>
+        <div style="height: 32px">
+            <font style="width: auto">
+                分类id
+            </font>
+            <input id="category_id" name="category_id" value="" type="number"/>
+        </div>
+        <div style="height: 32px">
+            <font style="width: auto">
+                图书存放位置
+            </font>
+            <input id="store_position" name="store_position" value="1F A书架" type="text"/>
+        </div>
+        <div style="height: 32px">
+            <input type="submit" value="添加"/>
+        </div>
     </form>
 </body>
 </html>

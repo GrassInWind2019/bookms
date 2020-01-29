@@ -50,7 +50,7 @@ func (m *Score) AddScore() error  {
 }
 
 func (m *Score) GetBookScore() (score Score, err error) {
-	if "" == m.Identify || m.UserId >= 0 {
+	if "" == m.Identify || m.UserId <= 0 {
 		err = errors.New("Invalid arguments")
 		return
 	}

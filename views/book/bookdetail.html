@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>图书详情</title>
+    <link rel="stylesheet" href="/static/css/star-main.css" media="all" type="text/css"/>
     <style type="text/css">
         *,body {
             margin: 0px;
@@ -127,23 +128,90 @@
         }
     </script>
 </div>
-<form class="comment_form" id="comment_form" name="comment_form" method="post" action="/bookcomment/{{.Books.Identify}}">
+<form class="comment_form" id="comment_form" name="comment_form">
     {{if compare .IsScored 0}}
         <div>
-            评分:<input type="number" id="score" name="score" value="" placeholder="评分" required/>
+            {{/*评分:<input type="number" id="score" name="score" value="" placeholder="评分" required/>*/}}
+            {{/*{{template  "/book/star.html" .}}*/}}
+            <div class="manyidu">
+                <span style="font-size: 2rem;line-height: 2.9rem;padding: 1rem;display: none;" id="starStr">满意度</span>
+                <div class="panel-body" style="text-align: center; margin-left: 23%;">
+                    <input name="starNum" id="starNum" type="hidden"/>
+                    <div class="starability-container">
+                        <fieldset class="starability-slot">
+                            <input type="radio" id="rate_1_0_1_5" name="starLevel" value="5"/>
+                            <label for="rate_1_0_1_5" title="5星"></label>
+                            <input type="radio" id="rate_1_0_1_4" name="starLevel" value="4"/>
+                            <label for="rate_1_0_1_4" title="4星"></label>
+                            <input type="radio" id="rate_1_0_1_3" name="starLevel" value="3"/>
+                            <label for="rate_1_0_1_3" title="3星"></label>
+                            <input type="radio" id="rate_1_0_1_2" name="starLevel" value="2"/>
+                            <label for="rate_1_0_1_2" title="2星"></label>
+                            <input type="radio" id="rate_1_0_1_1" name="starLevel" value="1"/>
+                            <label for="rate_1_0_1_1" title="1星"></label>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
         </div>
     {{else}}
         <div>
-            评分：{{.ScoreNum}}
+            我的评分：{{.ScoreNum}}
         </div>
     {{end}}
-    <div>
-        <!-- input type="text" id="comment" name="comment" value="" placeholder="评论" required/ -->
-        评论:<textarea id="comment" name="comment" value="" placeholder="评论" cols="30" rows="10"></textarea><br/>
+    <!--评论输入框-->
+    <div class="comments_body">
+            <textarea class="comments_body-text" id="customerEvaluationComment"
+                      name="userComment"
+                      placeholder="写点评论吧..."
+                      class="form-control" cols="50" rows="10" style="" maxlength="450"></textarea>
     </div>
-    <div>
-        <input class="comments_submit_button" type="submit" value="发表评论">
+
+    <!--按钮-->
+    <div class="comments_submit_button">
+        <button type="button" class="comments_submit_button"
+                onclick="comments_submit();">发表评论
+        </button>
     </div>
+    {{/*<div>*/}}
+        {{/*<!-- input type="text" id="comment" name="comment" value="" placeholder="评论" required/ -->*/}}
+        {{/*评论:<textarea id="comment" name="comment" value="" placeholder="评论" cols="30" rows="10"></textarea><br/>*/}}
+    {{/*</div>*/}}
+    {{/*<div>*/}}
+        {{/*<input class="comments_submit_button" type="submit" value="发表评论">*/}}
+    {{/*</div>*/}}
+    <script>
+        function getRadioButtonCheckedValue(tagNameAttr){
+            var radio_tag = document.getElementsByName(tagNameAttr);
+            //alert(radio_tag.length)
+            for(var i=0;i<radio_tag.length;i++){
+                if(radio_tag.item(i).checked){
+                    var checkvalue = radio_tag.item(i).getAttribute("value");
+                    return checkvalue;
+                }
+            }
+        }
+        var is_scored = {{.IsScored}};
+        // 提交评论
+        function comments_submit() {
+            if (is_scored == 0)
+            {
+                var customerEvaluationLevel = getRadioButtonCheckedValue("starLevel");
+                //alert(customerEvaluationLevel);
+                if (customerEvaluationLevel == undefined || customerEvaluationLevel == null || customerEvaluationLevel == '') {
+                    alert('请将满意度选好再提交哦！');
+                    return false;
+                }
+            }
+
+            var url = "/bookcomment/{{.Books.Identify}}";
+            //alert(url);
+            frm = document.getElementById("comment_form");
+            frm.action = url;
+            frm.method = "post";
+            frm.submit();
+        }
+    </script>
 </form>
 <div class="comments">
     <div class="comments_title">

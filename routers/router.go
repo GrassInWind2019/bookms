@@ -16,6 +16,7 @@ func init() {
     beego.Router("/register", &controllers.LoginController{}, "get:Register;post:RegisterDo")
     beego.Router("/favoritedo/:identify", &controllers.UserController{}, "*:FavoriteDo")
     beego.Router("/bookcomment/:identify", &controllers.UserController{}, "*:AddCommentAndScore")
+    beego.Router("/usercenter", &controllers.UserController{}, "*:GetUserCenterInfo")
 
     //category
     beego.Router("/addcategory", &controllers.CategoryController{}, "*:AddCategory")

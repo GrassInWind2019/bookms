@@ -11,6 +11,16 @@ type Favorite struct {
 	Identify string `orm:"size(100)" json:"identify"`
 }
 
+type UserFavorite struct {
+	Id int `json:"id"`
+	UserId int `json:"user_id"`
+	Identify string `json:"identify"`
+	BookName string `json:"book_name"`
+	Cover string `json:"cover"`
+	Author string `json:"author"`
+	CategoryName string `json:"category_name"`
+}
+
 func (m *Favorite) FavoriteDo() error {
 	if m.UserId <= 0 || "" == m.Identify || m.Id > 0 {
 		return errors.New("Invalid arguments")
@@ -57,7 +67,7 @@ func (m *Favorite) IsFavorite() (res bool, err error) {
 	}
 }
 
-func (m *Favorite) ListFavoriteByUserId() (books []Book, err error) {
+func (m *Favorite) ListFavoriteByUserId() (books []Book, cnt int64, err error) {
 	if m.UserId <= 0 {
 		err = errors.New("Invalid argument")
 		return
@@ -65,8 +75,12 @@ func (m *Favorite) ListFavoriteByUserId() (books []Book, err error) {
 	o := GetOrm("ur")
 	sql := "select identify from " + TNFavorite() + " where user_id=" + strconv.Itoa(m.UserId)
 	var identifies []string
-	_,err = o.Raw(sql).QueryRows(&identifies)
-	if err != nil {
+	cnt,err = o.Raw(sql).QueryRows(&identifies)
+	if err != nil || 0 == cnt {
+		return
+	}
+	if cnt < 0 {
+		err = errors.New("internal error")
 		return
 	}
 	o = GetOrm("r")

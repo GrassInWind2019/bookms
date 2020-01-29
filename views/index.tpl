@@ -45,13 +45,15 @@
       text-align: -webkit-right;
     }
     .top_category {
-      width: 480px;
+      width: 960px;
+        font-size: 20px;
+        line-height: 32px;
       margin-left: auto;
       margin-right: auto;
       text-align: center;
     }
     .index_books {
-      width: 480px;
+      width: 960px;
       margin-left: auto;
       margin-right: auto;
       text-align: center;
@@ -94,10 +96,16 @@
   <header>
     <div class="login">
       {{if eq .IsLogin 1}}
-      <input type="button" value="登出" onclick="logout()"/>
+        <input type="button" value="退出登录" style="width: 96px;height: 24px" onclick="logout()"/>
         {{else}}
-        <input type="button" value="登录" onclick="login()"/>
+            <input type="button" value="登录" style="width: 48px;height: 24px;" onclick="login()"/>
+            <a href="http://localhost:8080/register">
+                <input type="button" value="注册" style="height: 24px;width: 48px;"/>
+            </a>
       {{end}}
+        <a href="http://localhost:8080/usercenter">
+            <input type="button" value="个人中心" style="height: 24px;width: 96px"/>
+        </a>
     </div>
     <h1 class="logo">Welcome to Beego</h1>
     <div class="description">
@@ -108,7 +116,7 @@
     function logout() {
         var url = "http://localhost:8080/logout";
         //window.open(url);
-        alert(url);
+        //alert(url);
         window.location.href=url;
         console.log("logout");
     }
@@ -128,10 +136,15 @@
       {{end}}
     </div>
     <div class="index_books">
-      首页图书：
+        <font style="font-size: 28px;height:40px;text-align: center">
+            首页图书：
+        </font>
       {{range $idx,$HomeBook :=.HomeBooks}}
-        <div>
+        <div style="height: 32px;font-size: 20px;text-align: center;">
           {{$HomeBook}}
+            <a href="http://localhost:8080/bookdetail/{{$HomeBook.Identify}}">
+                <input type="button" value="查看此书详情"/>
+            </a>
         </div>
       {{end}}
     </div>

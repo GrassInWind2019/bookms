@@ -40,9 +40,9 @@
         <input id="Biography" type="text" name="Biography" placeholder="个人简介">
     </div>
 </form>
-<input type="button" value="提交" onclick="register()"/>
+<input type="button" value="提交" onclick="registerDo()"/>
 <script type="text/javascript">
-    function register() {
+    function registerDo() {
         var url = "/register";
         var frm = document.getElementById("registerForm");
         frm.action = url;

@@ -72,7 +72,7 @@ func (c *GetBookController) GetBooksByIdentify() {
 			Identify:identify,
 		}
 		_, err = scoreObj.GetBookScore()
-		if err != nil {
+		if err == nil {
 			isScored = 1
 		}
 	} else {
@@ -86,7 +86,9 @@ func (c *GetBookController) GetBooksByIdentify() {
 	c.Data["BookComments"] = book_comments
 	c.Data["UserId"] = c.Muser.Id
 	c.Data["IsScored"] = isScored
-	c.Data["ScoreNum"] = book_comments[0].Score / 10
+	if len(book_comments) > 0 {
+		c.Data["ScoreNum"] = book_comments[0].Score / 10
+	}
 	logs.Debug("UserId: ", c.Muser.Id)
 	logs.Debug(book_records)
 }
