@@ -7,12 +7,53 @@ import (
 	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/pkg/errors"
+	"github.com/sony/sonyflake"
+	"strconv"
+	"time"
+)
+
+var (
+	sonyflakeObj *sonyflake.Sonyflake
 )
 func init() {
+	initUUID()
 	gob.Register(models.User{})
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	dbinit("w","r")
 	dbinit("uw","ur")
+}
+
+func initUUID() {
+	machine_idstr := beego.AppConfig.String("machine_id")
+	if "" == machine_idstr {
+		panic("UUID machine id cannot be null")
+	}
+	machine_id, err := strconv.ParseInt(machine_idstr, 10, 64)
+	if err != nil {
+		panic(err.Error())
+	}
+	st := sonyflake.Settings{
+		StartTime:time.Now(),
+		MachineID: func() (uint16, error) {
+			if machine_id > 2^16 {
+				return 0, errors.New("Machine id overflow!")
+			}
+			return uint16(machine_id),nil
+		},
+		CheckMachineID: func(u uint16) bool {
+			return  true
+		},
+	}
+	sonyflakeObj = sonyflake.NewSonyflake(st)
+	if sonyflakeObj == nil {
+		panic("Create sonyflake object failed!")
+	}
+	logs.Debug("sonyflake object create success", sonyflakeObj)
+}
+
+func GetSonyFlakeObj() *sonyflake.Sonyflake {
+	return sonyflakeObj
 }
 
 func dbinit(aliases ...string) {

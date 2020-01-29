@@ -18,7 +18,6 @@
             background-color: #fff;
         }
         .book {
-            width: 960px;
             height: 40px;
             margin-left: auto;
             margin-right: auto;
@@ -27,14 +26,15 @@
             line-height: 28px;
         }
         .favorite_button_area {
-            width:60px;
+            width:120px;
             height: 40px;
             background-position: center;
             margin-left: auto;
             margin-right: auto;
+            text-align: center;
         }
         .favorite_button {
-            width: 30px;
+            width: 60px;
             height: 30px;
             margin-left: auto;
             margin-right: auto;
@@ -123,7 +123,7 @@
     <script type="text/javascript">
         function favorite_do(identify) {
             var url = "http://localhost:8080/favoritedo/"+identify;
-            alert(url);
+            //alert(url);
             window.location.href=url;
         }
     </script>

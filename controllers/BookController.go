@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	bookms_init "bookms/init"
 	"bookms/models"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"strconv"
@@ -18,10 +20,6 @@ func (c *BookController) AddBook() {
 		book_name := c.GetString("book_name")
 		if book_name == "" {
 			c.JsonResult(400, "书名不能为空")
-		}
-		identify := c.GetString("identify")
-		if identify == "" {
-			c.JsonResult(400, "标识不能为空")
 		}
 		description := c.GetString("description")
 		catalog := c.GetString("catalog")
@@ -44,6 +42,16 @@ func (c *BookController) AddBook() {
 		store_position := c.GetString("store_position")
 		if "" == store_position {
 			c.JsonResult(400, "存放位置不能为空")
+		}
+		//get an uuid for book by sonyflake
+		sonyflakeObj := bookms_init.GetSonyFlakeObj()
+		uuid, err := sonyflakeObj.NextID()
+		if err != nil {
+			c.JsonResult(500, "UUID create failed! "+err.Error())
+		}
+		identify := fmt.Sprint(uuid)
+		if "" == identify {
+			c.JsonResult(500, "UUID create failed!")
 		}
 
 		book := models.Book{

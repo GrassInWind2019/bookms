@@ -25,7 +25,6 @@ type Book struct {
 	FavoriteCount int `orm:"column(favorite_count);type(int);default(0)" json:"favorite_count"`  //收藏次数
 	AverageScore int `orm:"column(average_score);default(0)" json:"average_score"`
 	ScoreCount int `orm:"column(score_count);default(0)" json:"score_count"`
-	//CommentPeopleCount int `orm:"column(comment_people_count);default(0)" json:"comment_people_count"`
 	Author string `orm:"size(100)" json:"author"`
 	BookCount int `orm:"column(book_count)" json:"book_count"`
 }
@@ -55,32 +54,6 @@ func (m *Book) GetBooksByCategory(category, page, pagesize int, fields ...string
 	return
 }
 
-//func (m *Book) GetBooksByIds(ids []int, fields ...string) (books []Book, err error) {
-//	if len(ids) == 0 {
-//		return
-//	}
-//	if len(fields) == 0 {
-//		fields = append(fields, "id", "book_name", "identify", "description", "catalog", "cover",
-//			"create_time", "doc_count", "comment_count", "favorite_count", "score", "score_count",
-//			"comment_people_count", "author")
-//	}
-//	o := GetOrm("r")
-//	//select * from bookms_book where id in(1,2,3)
-//	_, err = o.QueryTable(TNBook()).Filter("id__in", ids).All(&books, fields...)
-//
-//	return
-//}
-
-//func (m *Book) GetBookIdsByIdentify(identify string) (ids []int, err error) {
-//	o := GetOrm("r")
-//	var books []Book
-//	_, err = o.QueryTable(TNBook()).Filter("identify",identify).All(&books, "id")
-//	for _,book := range books {
-//		ids = append(ids, book.Id)
-//	}
-//	return
-//}
-
 func (m *Book) GetBooksByIdentifies(identifies []string) (books []Book, err error) {
 	o := GetOrm("r")
 	_, err = o.QueryTable(TNBook()).Filter("identify__in", identifies).All(&books)
@@ -89,14 +62,7 @@ func (m *Book) GetBooksByIdentifies(identifies []string) (books []Book, err erro
 
 func (m *Book) AddBook() error {
 	o := GetOrm("w")
-	//var books []Book
-	//for i:=0; i<m.BookCount; i++ {
-	//	book := new(Book)
-	//	if err := utils.DeepCopy(book, m); err != nil {
-	//		return err
-	//	}
-	//	books = append(books, *book)
-	//}
+
 	if "" == m.Identify {
 		return errors.New("Identify cannot be null")
 	}
