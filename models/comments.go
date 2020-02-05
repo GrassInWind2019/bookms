@@ -52,7 +52,7 @@ func (m *Comments) GetBookCommentsAndScores(identify string, page, page_size int
 
 	sql := "select c.content,c.create_time,s.score,u.id as user_id,u.avatar,u.nickname,u.role from bookms_user_comments c" +
 		" left join bookms_user_score s on c.identify=s.identify left join bookms_user_user u on " +
-		"u.id=c.user_id where c.identify="+identify+" and s.identify="+identify+" order by c.id desc limit %v offset %v"
+		"u.id=c.user_id where c.identify='"+identify+"' and s.identify='"+identify+"' order by c.id desc limit %v offset %v"
 	sql = fmt.Sprintf(sql, page_size, (page - 1)*page_size)
 	o := GetOrm("ur")
 	_, err = o.Raw(sql).QueryRows(&book_comments)

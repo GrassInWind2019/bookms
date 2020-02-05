@@ -13,28 +13,44 @@ type Score struct {
 	CreateTime time.Time `orm:"column(create_time)" json:"create_time"`
 }
 
-func (m *Score) AddScore() error  {
+func (m *Score) AddScore() (err error)  {
 	if "" == m.Identify || m.UserId <= 0 || m.Score <= 0 || m.Score > 5 {
 		return errors.New("Invalid arguments")
 	}
 	m.Score = m.Score*10
-	o := GetOrm("uw")
+	o1 := GetOrm("uw")
+	o1.Begin()
+	defer func() {
+		if err != nil {
+			o1.Rollback()
+		} else {
+			o1.Commit()
+		}
+	}()
 	//select id from bookms_score where user_id=? and identify=?
 	score := Score{
 		Identify:m.Identify,
 		UserId:m.UserId,
 	}
 	//TODO:check errors except "no row found"
-	o.Read(&score, "user_id", "identify")
+	o1.Read(&score, "user_id", "identify")
 	if score.Id > 0 {
 		return errors.New("The user had already scored the book!")
 	}
-	_, err := o.Insert(m)
-	o = GetOrm("w")
+	_, err = o1.Insert(m)
+	o2 := GetOrm("w")
+	o2.Begin()
+	defer func() {
+		if err != nil {
+			o2.Rollback()
+		} else {
+			o2.Commit()
+		}
+	}()
 	book := Book{
 		Identify:m.Identify,
 	}
-	err = o.Read(&book, "identify")
+	err = o2.Read(&book, "identify")
 	if err != nil {
 		return err
 	}
@@ -45,7 +61,7 @@ func (m *Score) AddScore() error  {
 		book.AverageScore = (book.AverageScore*book.ScoreCount+m.Score)/(book.ScoreCount+1)
 		book.ScoreCount = book.ScoreCount + 1
 	}
-	_, err = o.Update(&book, "average_score", "score_count")
+	_, err = o2.Update(&book, "average_score", "score_count")
 	return err
 }
 

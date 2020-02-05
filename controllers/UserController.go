@@ -88,10 +88,200 @@ func (c *UserController) GetUserCenterInfo() {
 	if err != nil {
 		c.JsonResult(500, err.Error())
 	}
+	var page int
+	page,err = c.GetInt(":page", 1)
+	if err != nil {
+		page = 1
+	}
 	fav := models.Favorite{
 		UserId:c.Muser.Id,
 	}
-	books, cnt, err := fav.ListFavoriteByUserId()
+	books, cnt, err := fav.ListFavoriteByUserId(page,100)
+	if err != nil {
+		c.JsonResult(500, err.Error())
+	}
+	is_admin := user.IsAdmin()
+	if is_admin {
+		c.Data["IsAdmin"] = 1
+	} else {
+		c.Data["IsAdmin"] = 0
+	}
+
+	c.Data["UserInfo"] = *user
+	if 0 >= cnt {
+		c.Data["MyFavoriteCount"] = 0
+	} else {
+		c.Data["MyFavoriteCount"] = cnt
+		c.Data["MyFavorite"] = books
+	}
+	c.TplName = "user/userCenter.html"
+}
+
+func (c *UserController) GetUserCenterInfo2() {
+	user := &models.User{
+		Id:c.Muser.Id,
+	}
+	user,err := user.Find(c.Muser.Id)
+	if err != nil {
+		c.JsonResult(500, err.Error())
+	}
+	var page int
+	page,err = c.GetInt(":page", 1)
+	if err != nil {
+		page = 1
+	}
+	fav := models.Favorite{
+		UserId:c.Muser.Id,
+	}
+	books, cnt, err := fav.ListFavoriteByUserId2(page,100)
+	if err != nil {
+		c.JsonResult(500, err.Error())
+	}
+	is_admin := user.IsAdmin()
+	if is_admin {
+		c.Data["IsAdmin"] = 1
+	} else {
+		c.Data["IsAdmin"] = 0
+	}
+
+	c.Data["UserInfo"] = *user
+	if 0 >= cnt {
+		c.Data["MyFavoriteCount"] = 0
+	} else {
+		c.Data["MyFavoriteCount"] = cnt
+		c.Data["MyFavorite"] = books
+	}
+	c.TplName = "user/userCenter.html"
+}
+
+func (c *UserController) GetUserCenterInfo3() {
+	user := &models.User{
+		Id:c.Muser.Id,
+	}
+	user,err := user.Find(c.Muser.Id)
+	if err != nil {
+		c.JsonResult(500, err.Error())
+	}
+	var page int
+	page,err = c.GetInt(":page", 1)
+	if err != nil {
+		page = 1
+	}
+	fav := models.Favorite{
+		UserId:c.Muser.Id,
+	}
+	books, cnt, err := fav.ListFavoriteByUserId3(page,100)
+	if err != nil {
+		c.JsonResult(500, err.Error())
+	}
+	is_admin := user.IsAdmin()
+	if is_admin {
+		c.Data["IsAdmin"] = 1
+	} else {
+		c.Data["IsAdmin"] = 0
+	}
+
+	c.Data["UserInfo"] = *user
+	if 0 >= cnt {
+		c.Data["MyFavoriteCount"] = 0
+	} else {
+		c.Data["MyFavoriteCount"] = cnt
+		c.Data["MyFavorite"] = books
+	}
+	c.TplName = "user/userCenter.html"
+}
+
+func (c *UserController) GetUserCenterFav() {
+	user := &models.User{
+		Id:c.Muser.Id,
+	}
+	user,err := user.Find(c.Muser.Id)
+	if err != nil {
+		c.JsonResult(500, err.Error())
+	}
+	var page int
+	page,err = c.GetInt(":page", 1)
+	if err != nil {
+		page = 1
+	}
+	fav := models.Favorite{
+		UserId:c.Muser.Id,
+	}
+	books, cnt, err := fav.ListFavoriteByUserIdReturnUserFav(page,100)
+	if err != nil {
+		c.JsonResult(500, err.Error())
+	}
+	is_admin := user.IsAdmin()
+	if is_admin {
+		c.Data["IsAdmin"] = 1
+	} else {
+		c.Data["IsAdmin"] = 0
+	}
+
+	c.Data["UserInfo"] = *user
+	if 0 >= cnt {
+		c.Data["MyFavoriteCount"] = 0
+	} else {
+		c.Data["MyFavoriteCount"] = cnt
+		c.Data["MyFavorite"] = books
+	}
+	c.TplName = "user/userCenter.html"
+}
+
+func (c *UserController) GetUserCenterFav2() {
+	user := &models.User{
+		Id:c.Muser.Id,
+	}
+	user,err := user.Find(c.Muser.Id)
+	if err != nil {
+		c.JsonResult(500, err.Error())
+	}
+	var page int
+	page,err = c.GetInt(":page", 1)
+	if err != nil {
+		page = 1
+	}
+	fav := models.Favorite{
+		UserId:c.Muser.Id,
+	}
+	books, cnt, err := fav.ListFavoriteByUserIdReturnUserFav2(page,100)
+	if err != nil {
+		c.JsonResult(500, err.Error())
+	}
+	is_admin := user.IsAdmin()
+	if is_admin {
+		c.Data["IsAdmin"] = 1
+	} else {
+		c.Data["IsAdmin"] = 0
+	}
+
+	c.Data["UserInfo"] = *user
+	if 0 >= cnt {
+		c.Data["MyFavoriteCount"] = 0
+	} else {
+		c.Data["MyFavoriteCount"] = cnt
+		c.Data["MyFavorite"] = books
+	}
+	c.TplName = "user/userCenter.html"
+}
+
+func (c *UserController) GetUserCenterFav3() {
+	user := &models.User{
+		Id:c.Muser.Id,
+	}
+	user,err := user.Find(c.Muser.Id)
+	if err != nil {
+		c.JsonResult(500, err.Error())
+	}
+	var page int
+	page,err = c.GetInt(":page", 1)
+	if err != nil {
+		page = 1
+	}
+	fav := models.Favorite{
+		UserId:c.Muser.Id,
+	}
+	books, cnt, err := fav.ListFavoriteByUserIdReturnUserFav3(page,100)
 	if err != nil {
 		c.JsonResult(500, err.Error())
 	}

@@ -31,14 +31,14 @@ type Book struct {
 
 func (m *Book) GetBooksByCategory(category, page, pagesize int, fields ...string) (books []Book, count int, err error) {
 	if len(fields) == 0 {
-		fields = append(fields, "book_name", "identify", "cover", "status", "sort", "author")
+		fields = append(fields, "book_name", "identify", "cover", "status", "create_time", "author")
 	}
 	fieldStr := "b."+strings.Join(fields, ",b.")
 	//select * from bookms_book b left join bookms_book_category c on b.id = c.book_id where b.status=0 and c.category_id=1 order by sort limit 0,10
 	sqlFmt := "select %v from " + TNBook() + " b left join " + TNBookCategory() +
 	" c on b.identify=c.identify where c.category_id=" + strconv.Itoa(category)
 	sql := fmt.Sprintf(sqlFmt, fieldStr)
-	sql = sql + " order by sort limit %d,%d"
+	sql = sql + " limit %d,%d"
 	sql = fmt.Sprintf(sql, (page-1)*pagesize,pagesize)
 	sqlCount := fmt.Sprintf(sqlFmt, "count(*) cnt")
 	logs.Debug("GetBooksByCategory: "+sql)
@@ -50,6 +50,39 @@ func (m *Book) GetBooksByCategory(category, page, pagesize int, fields ...string
 			count, _ = strconv.Atoi(params[0]["cnt"].(string))
 		}
 	}
+	_, err = o.Raw(sql).QueryRows(&books)
+	return
+}
+
+func (m *Book) GetBooksByCategory2(category, page, page_size int, fields ...string) (books []Book, count int, err error) {
+	if len(fields) == 0 {
+		fields = append(fields, "id","book_name", "identify", "cover","create_time", "status", "author")
+	}
+	fieldStr := strings.Join(fields, ",")
+	sql := "select identify from "+TNBookCategory()+" where category_id=" + strconv.Itoa(category) + " limit 0,1000"
+	//logs.Debug(sql)
+	var identifies []string
+	o := GetOrm("r")
+	if _,err = o.Raw(sql).QueryRows(&identifies); err != nil {
+		return
+	}
+	identifies_str := "'"
+	identifies_str += strings.Join(identifies, "','")
+	identifies_str += "'"
+	sql = "select count(*) cnt from "+TNBook()+" where identify in ("+ identifies_str+ ")"
+	//logs.Debug(sql)
+	var params []orm.Params
+	if _,err = o.Raw(sql).Values(&params); err != nil {
+		return
+	}
+	if len(params) > 0 {
+		count, _ = strconv.Atoi(params[0]["cnt"].(string))
+	} else {
+		return
+	}
+	sql = "select %v from "+TNBook()+ " where identify in ("+identifies_str+") order by id limit %d,%d"
+	sql = fmt.Sprintf(sql, fieldStr, (page-1)*page_size, page_size)
+	//logs.Debug(sql)
 	_, err = o.Raw(sql).QueryRows(&books)
 	return
 }

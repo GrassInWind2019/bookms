@@ -104,7 +104,9 @@ func UpdateCategoryCount() {
 	}
 	var count []Count
 	o := GetOrm("w")
-	sql := "select sum(b.book_count) as cnt, c.category_id as cid from " + TNBook() + " b left join " + TNBookCategory() + " c on b.identify=c.identify group by c.category_id"
+	//select sum(b.book_count) as cnt, c.category_id as cid from bookms_book b left join bookms_book_category c on b.identify=c.identify group by c.category_id 不会使用索引
+	//select sum(b.book_count) as cnt, c.category_id as cid from bookms_book_category c left join bookms_book b on b.identify=c.identify group by c.category_id 使用索引
+	sql := "select sum(b.book_count) as cnt, c.category_id as cid from " + TNBookCategory() + " c left join " + TNBook() + " b on b.identify=c.identify group by c.category_id"
 	o.Raw(sql).QueryRows(&count)
 	logs.Debug("count result: ", count)
 	if len(count) == 0 {

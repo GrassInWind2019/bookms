@@ -41,7 +41,7 @@ func (c *HomeController) Index() {
 		}
 		var book models.Book
 		for _, cate := range cates {
-			books,_,err := book.GetBooksByCategory(cate.Id, 1, 5)
+			books,_,err := book.GetBooksByCategory2(cate.Id, 1, 5)
 			if err != nil {
 				c.JsonResult(500, err.Error())
 			}

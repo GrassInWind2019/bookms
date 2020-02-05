@@ -29,6 +29,7 @@ create table if not exists `bookms_book_category` (
 `identify` varchar(100) not null default '',
 `category_id` int(11) not null default '0',
 primary key (`id`),
+key(`identify`),
 foreign key(`category_id`) references `bookms_category`(`id`)
 )engine=InnoDB auto_increment=2 default charset=utf8;
 

@@ -10,7 +10,7 @@ type BookRecord struct {
 	Id int `orm:"pk;auto" json:"id"`
 	//BookId int `orm:"column(book_id)" json:"book_id"`
 	Identify string `orm:"size(100)" json:"identify"`
-	LendStatus int `orm:"column(lend_status);default(0)" json:"lend_status"`  //状态:0 在馆 ; 1 已借出
+	LendStatus int `orm:"column(lend_status);default(0)" json:"lend_status"`  //状态:0 在馆 ; 1 已借出;  5-->已下架
 	UserId int `orm:"column(user_id);size(20)" json:"user_id"`  //借阅人
 	LendTime time.Time `orm:"column(lend_time);type(datetime);not null" json:"lend_time"`  //借出时间
 	ReturnTime time.Time `orm:"column(return_time);type(datetime);not null" json:"return_time"` //归还时间
@@ -89,7 +89,7 @@ func (m *BookRecord) GetBookRecordsByIdentify(identify string) (bookRecords []Bo
 	//if _ ,err = o.QueryTable(TNBookRecord()).Filter("identify", identify).All(&bookRecords); err != nil {
 	//	return
 	//}
-	sql := "select * from "+TNBookRecord()+" where identify="+identify
+	sql := "select * from "+TNBookRecord()+" where identify='"+identify+"'"
 	logs.Debug(sql)
 	if _, err = o.Raw(sql).QueryRows(&bookRecords); err != nil {
 		return

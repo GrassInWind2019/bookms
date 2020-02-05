@@ -88,6 +88,7 @@ func (c *LoginController) RegisterDo() {
 		Biography:biography,
 		Role:2,
 		CreateTime:time.Now(),
+		LastLoginTime:time.Now(),
 		Status: 0,
 	}
 
@@ -112,6 +113,6 @@ func (c *LoginController) login(id int) (error) {
 	if err != nil {
 		return err
 	}
-	c.SetSecureCookie(secretCookie, "user", v, 600)
+	c.SetSecureCookie(secretCookie, "user", v, 600000)
 	return err
 }

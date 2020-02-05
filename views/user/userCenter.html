@@ -3,19 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <title>个人中心</title>
+    <style type="text/css">
+        .index_button{
+            font-size: 20px;
+            height: 40px;
+            background-repeat: no-repeat;
+            background-position: right;
+            text-align: -webkit-right;
+        }
+        .add_book {
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            line-height: 64px;
+        }
+        .avatar {
+            background-image: url("/static/img/1.png");
+            background-repeat: no-repeat;
+            -webkit-background-size: 80px 80px;
+            background-size: 80px 80px;
+            background-position: center center;
+            text-align: center;
+            font-size: 42px;
+            padding: 150px 0 20px;
+            font-weight: normal;
+            text-shadow: 0px 1px 2px #ddd;
+        }
+    </style>
 </head>
 <body>
+<div class="index_button">
+    <a href="http://localhost:8080">
+        <input type="button" value="返回首页" style="height: 36px;width: 64px;"/>
+    </a>
+</div>
 <div style="font-size: 28px;color: aqua;background-color: #333333;width: 120px;height: 32px;line-height: 32px;margin-left: auto;margin-right: auto;text-align: center;">
     个人中心
+</div>
+<div class="avatar">
+
 </div>
 <div style="font-size: 20px;height: 240px;line-height: 32px;margin-left: auto;margin-right: auto;">
     {{.UserInfo}}
 </div>
+<div class="add_book">
 {{if eq .IsAdmin 1}}
     <a href="http://localhost:8080/addbook">
         <input type="button" value="添加图书" style="width: 96px;"/>
     </a>
 {{end}}
+</div>
 <div>
     <div style="font-size: 24px;height: 40px;text-align: center;color: blueviolet;">
         我的收藏

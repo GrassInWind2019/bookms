@@ -17,6 +17,13 @@
             line-height: 20px;
             background-color: #fff;
         }
+        .index_button{
+            font-size: 20px;
+            height: 40px;
+            background-repeat: no-repeat;
+            background-position: right;
+            text-align: -webkit-right;
+        }
         .book {
             height: 40px;
             margin-left: auto;
@@ -106,8 +113,14 @@
             background-color: forestgreen;
         }
     </style>
+
 </head>
 <body>
+<div class="index_button">
+        <a href="http://localhost:8080">
+        <input type="button" value="返回首页" style="height: 36px;width: 64px;"/>
+    </a>
+</div>
 <div class="book">
     {{.Books}}
 </div>
