@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bookms/cache"
 	_ "bookms/init"
 	_ "bookms/models"
 	_ "bookms/routers"
@@ -14,6 +15,7 @@ func main() {
 	logs.SetLevel(logs.LevelDebug)
 	//models.UpdateCategoryCount()
 	//go RunGC()
+	defer cache.ClosePool()
 	beego.Run()
 }
 

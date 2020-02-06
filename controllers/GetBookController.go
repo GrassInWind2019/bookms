@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"bookms/cache"
 	"bookms/models"
 	"bookms/utils"
 	"github.com/astaxie/beego/logs"
@@ -11,18 +12,27 @@ type GetBookController struct {
 	Muser models.User
 }
 
-//type BookRecordStatus int
-//
-//const(
-//	CannotLend BookRecordStatus = iota
-//	CanLend
-//	CanReturn
-//)
-
 func (c *GetBookController) Prepare() {
+	sess,err := GlobalSessions.SessionStart(c.Ctx.ResponseWriter, c.Ctx.Request)
+	if err != nil {
+		logs.Error(err.Error())
+		return
+	}
+	defer sess.SessionRelease(c.Ctx.ResponseWriter)
+	user := sess.Get("user")
+	if nil != user {
+		c.Muser = user.(models.User)
+		if c.Muser.Id > 0 {
+			logs.Debug("Get user from session: ", c.Muser)
+			return
+		}
+	}
 	if cookie, ok := c.GetSecureCookie(secretCookie, "user"); ok {
 		if err := utils.Decode(cookie, &c.Muser); err == nil && c.Muser.Id > 0 {
 			logs.Debug("user: ", c.Muser.Id, " "+c.Muser.Nickname)
+			if err = sess.Set("user", c.Muser); err != nil {
+				logs.Error("set session failed:", err.Error())
+			}
 			return
 		}
 		logs.Error("Get user from cookie failed.")
@@ -37,52 +47,101 @@ func (c *GetBookController) GetBooksByIdentify() {
 	if "" == identify {
 		c.Abort("404")
 	}
-	var identifies []string
-	identifies = append(identifies, identify)
-	books, err := new(models.Book).GetBooksByIdentifies(identifies)
+	var books []models.Book
+	err := cache.GetInterface("book-"+identify, &books)
 	if err != nil {
-		c.JsonResult(400, err.Error())
+		logs.Debug(identify, err.Error())
+		var identifies []string
+		identifies = append(identifies, identify)
+		books, err = new(models.Book).GetBooksByIdentifies(identifies)
+		if err != nil {
+			c.JsonResult(400, err.Error())
+		}
+		err, _ = cache.SetInterface("book-"+identify, books, 3600)
+		if err != nil {
+			logs.Error("set ",identify,err.Error())
+		}
+	} else {
+		logs.Debug("Get books ",identify, " from cache")
 	}
-	book_records, err := new(models.BookRecord).GetBookRecordsByIdentify(identify)
+
+	var book_records []models.BookRecord
+	err = cache.GetInterface("book_record-"+identify, &book_records)
 	if err != nil {
-		c.JsonResult(400, err.Error())
+		logs.Debug("Get book record ", identify, err.Error())
+		book_records, err = new(models.BookRecord).GetBookRecordsByIdentify(identify)
+		if err != nil {
+			c.JsonResult(400, err.Error())
+		}
+		err,_ = cache.SetInterface("book_record-"+identify, book_records, 600)
+		if err != nil {
+			logs.Error("Set book record ", identify, err.Error())
+		}
+	}else {
+		logs.Debug("Get book record", identify, " from cache")
 	}
+
 	c.Data["BookRecords"] = book_records
 	c.Data["Books"] = books[0]
 	isScored := 0
 	if c.Muser.Id > 0 {
-		fav := models.Favorite{
-			Identify:identify,
-			UserId:c.Muser.Id,
-		}
-		isFav,err := fav.IsFavorite()
+		var isFav int
+		err, isFav = cache.GetInt("is_fav-"+identify)
 		if err != nil {
-			//c.Data["IsFavorite"] = false
-			c.Data["IsFavorite"] = 0
-		} else {
-			//c.Data["IsFavorite"] = isFav
-			if isFav {
-				c.Data["IsFavorite"] = 1
-			} else {
-				c.Data["IsFavorite"] = 0
+			logs.Debug("Get is_fav-"+identify, err.Error())
+			fav := models.Favorite{
+				Identify:identify,
+				UserId:c.Muser.Id,
 			}
+			isFav,err = fav.IsFavorite()
+			if err != nil {
+				logs.Error(err.Error())
+				c.Data["IsFavorite"] = 0
+				cache.SetInt("is_fav-"+identify, isFav,600)
+			} else {
+				cache.SetInt("is_fav-"+identify, isFav,600)
+				c.Data["IsFavorite"] = isFav
+			}
+		} else {
+			logs.Debug("Get is_fav-",identify," from cache")
+			c.Data["IsFavorite"] = isFav
 		}
-		scoreObj := models.Score{
-			UserId:c.Muser.Id,
-			Identify:identify,
-		}
-		_, err = scoreObj.GetBookScore()
-		if err == nil {
-			isScored = 1
+		err, isScored = cache.GetInt("is_scored-"+identify)
+		if err != nil {
+			logs.Debug("Get is_scored-", identify, err.Error())
+			scoreObj := models.Score{
+				UserId:c.Muser.Id,
+				Identify:identify,
+			}
+			_, err = scoreObj.GetBookScore()
+			if err == nil {
+				isScored = 1
+				err, reply := cache.SetInt("is_scored-"+identify, isScored, 600)
+				if err != nil {
+					logs.Error(err.Error(), reply)
+				}
+			}
+		} else {
+			logs.Debug("Get is_scored-", identify, " from cache")
 		}
 	} else {
 		c.Data["IsFavorite"] = 0
 	}
-	book_comments, err := new(models.Comments).GetBookCommentsAndScores(identify, 1, 5)
+	var book_comments []models.BookComment
+	err = cache.GetInterface("book_comments-"+identify, &book_comments)
 	if err != nil {
-		//c.JsonResult(500, err.Error())
-		logs.Debug("GetBookCommentsAndScores: ", err.Error())
+		logs.Debug("Get book_comments-",identify, err.Error())
+		book_comments, err = new(models.Comments).GetBookCommentsAndScores(identify, 1, 5)
+		if err != nil {
+			//c.JsonResult(500, err.Error())
+			logs.Debug("GetBookCommentsAndScores: ", err.Error())
+		}else {
+			cache.SetInterface("book_comments-"+identify,book_comments, 600)
+		}
+	} else {
+		logs.Debug("Get book_comments-",identify," from cache")
 	}
+
 	c.Data["BookComments"] = book_comments
 	c.Data["UserId"] = c.Muser.Id
 	c.Data["IsScored"] = isScored

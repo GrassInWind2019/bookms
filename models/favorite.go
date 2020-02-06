@@ -81,18 +81,18 @@ func (m *Favorite) FavoriteDo() (err error) {
 	return nil
 }
 
-func (m *Favorite) IsFavorite() (res bool, err error) {
+func (m *Favorite) IsFavorite() (res int, err error) {
 	if "" == m.Identify || m.UserId <= 0 || m.Id > 0 {
-		return false, errors.New("Invalid arguments")
+		return 0, errors.New("Invalid arguments")
 	}
 	o := GetOrm("ur")
 	if err = o.Read(m, "user_id", "identify"); err != nil {
-		return false, err
+		return 0, err
 	}
 	if m.Id > 0 {
-		return true, nil
+		return 1, nil
 	} else {
-		return false, nil
+		return 0, nil
 	}
 }
 

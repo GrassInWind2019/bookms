@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"bookms/cache"
 	bookms_init "bookms/init"
 	"bookms/models"
 	"fmt"
@@ -149,6 +150,11 @@ func (c *BookController) UpdateBookByIdentify() {
 		if err != nil {
 			c.JsonResult(500, err.Error())
 		}
+		err, reply:=cache.SetExpire("book-"+identify, 0)
+		if err != nil {
+			logs.Error("Set book-"+identify+" expire:",err.Error(), reply)
+		}
+		logs.Debug("Set cache book-"+identify+" expired")
 		book_category := models.BookCategory{
 			Identify:identify,
 			CategoryId:category_id,
@@ -177,6 +183,10 @@ func (c *BookController) DeleteBooksByIdentify() {
 		if err = new(models.BookRecord).DeleteBookRecordsByIds(ids); err != nil {
 			c.JsonResult(500, err.Error())
 		}
+		err, reply := cache.SetExpire("book_record-"+identify, 0)
+		if err != nil {
+			logs.Error("Set book_record-"+identify+" expire:",err.Error(), reply)
+		}
 	} else {
 		logs.Info("book records didn't have identify:"+identify)
 		c.JsonResult(500, "book records didn't have identify:"+identify)
@@ -184,6 +194,10 @@ func (c *BookController) DeleteBooksByIdentify() {
 
 	if err = new(models.Book).DeleteBook(identify); err != nil {
 		c.JsonResult(500, err.Error())
+	}
+	err, reply:=cache.SetExpire("book-"+identify, 0)
+	if err != nil {
+		logs.Error("Set book-"+identify+" expire:",err.Error(), reply)
 	}
 	if err = new(models.BookCategory).DeleteBookCategories(identify); err != nil {
 		c.JsonResult(500, err.Error())
@@ -260,6 +274,10 @@ func (c *BookController) LendBookById() {
 	if err = book_record.UpdateBookRecordById(book_id, "lend_count", "lend_status", "lend_time", "user_id"); err != nil {
 		c.JsonResult(500, err.Error())
 	}
+	err, reply := cache.SetExpire("book_record-"+book_record.Identify, 0)
+	if err != nil {
+		logs.Error("Set book_record-"+book_record.Identify+" expire:",err.Error(), reply)
+	}
 	c.JsonResult(200, "借书成功")
 }
 
@@ -281,6 +299,10 @@ func (c *BookController) ReturnBookById() {
 	book_record.UserId = -1
 	if err = book_record.UpdateBookRecordById(book_id, "lend_status", "return_time", "user_id"); err != nil {
 		c.JsonResult(500, err.Error())
+	}
+	err, reply := cache.SetExpire("book_record-"+book_record.Identify, 0)
+	if err != nil {
+		logs.Error("Set book_record-"+book_record.Identify+" expire:",err.Error(), reply)
 	}
 	c.JsonResult(200, "还书成功")
 }

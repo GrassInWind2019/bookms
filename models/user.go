@@ -34,11 +34,11 @@ func getRoleName(role int) string {
 	}
 }
 
-func (m *User) IsAdmin() bool {
+func (m *User) IsAdmin() int {
 	if 0 == m.Role {
-		return true
+		return 1
 	}
-	return false
+	return 0
 }
 
 func (m *User) Add() error {
