@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SearchBooks</title>
+    <style type="text/css">
+        .index_button{
+            font-size: 20px;
+            height: 40px;
+            background-repeat: no-repeat;
+            background-position: right;
+            text-align: -webkit-right;
+        }
+        .logo{
+            background-image: url("/static/img/6.png");
+            background-repeat: no-repeat;
+            -webkit-background-size: 80px 80px;
+            background-size: 80px 80px;
+            background-position: center center;
+            text-align: center;
+            height: 120px;
+        }
+        .search_books {
+            height: 60px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="index_button">
+    <a href="http://localhost:8080">
+        <input type="button" value="返回首页" style="height: 36px;width: 64px;"/>
+    </a>
+</div>
+<div class="logo">
+
+</div>
+<div class="search_books">
+    <input type="text" id="keyword" name="keyword" value="请输入搜索关键字..." style="line-height: 36px;width: 640px"/>
+    <input type="button" value="搜索" onclick="search()" style="line-height: 36px;width: 48px;background-color: gold"/>
+    <script>
+        function search() {
+            url = "http://localhost:8080/search/";
+            keyword = document.getElementById("keyword").value;
+            url = url+keyword;
+            //alert(url);
+            window.location.href=url;
+        }
+    </script>
+</div>
+<div style="line-height: 48px; margin-right: auto;margin-left: auto;text-align: center;font-size: 24px;color: red">
+    总共找到{{.Count}}本相关书籍
+</div>
+{{range $idx,$book :=.SearchBooks}}
+<div style="height: 32px;font-size: 20px;text-align: center;">
+{{$book}}
+    <a href="http://localhost:8080/bookdetail/{{$book.Identify}}">
+        <input type="button" value="查看此书详情"/>
+    </a>
+</div>
+{{end}}
+</body>
+</html>

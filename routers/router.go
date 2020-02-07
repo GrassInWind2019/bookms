@@ -35,4 +35,5 @@ func init() {
     beego.Router("/lendbook/:book_id", &controllers.BookController{}, "*:LendBookById")
     beego.Router("/returnbook/:book_id", &controllers.BookController{}, "*:ReturnBookById")
     beego.Router("/bookdetail/:identify", &controllers.GetBookController{}, "get:GetBooksByIdentify")
+    beego.Router("/search/:keyword", &controllers.SearchBookController{}, "*:SearchBooks")
 }

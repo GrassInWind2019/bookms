@@ -28,7 +28,7 @@
     }
 
     .logo {
-      background-image: url("/static/img/6.png");
+      background-image: url("/static/img/2.png");
       background-repeat: no-repeat;
       -webkit-background-size: 80px 80px;
       background-size: 80px 80px;
@@ -38,6 +38,11 @@
       padding: 150px 0 20px;
       font-weight: normal;
       text-shadow: 0px 1px 2px #ddd;
+    }
+    .search_books {
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
     }
     .login {
       background-repeat: no-repeat;
@@ -73,6 +78,7 @@
     .description {
       text-align: center;
       font-size: 16px;
+        line-height: 48px;
     }
 
     a {
@@ -111,6 +117,19 @@
     <div class="description">
       Bookms is a simple book manage system.
     </div>
+      <div class="search_books">
+          <input type="text" id="keyword" name="keyword" value="请输入搜索关键字..." style="line-height: 36px;width: 640px"/>
+          <input type="button" value="搜索" onclick="search()" style="line-height: 36px;width: 48px;background-color: gold"/>
+          <script>
+              function search() {
+                  url = "http://localhost:8080/search/";
+                  keyword = document.getElementById("keyword").value;
+                  url = url+keyword;
+                  //alert(url);
+                  window.location.href=url;
+              }
+          </script>
+      </div>
   </header>
   <script type="text/javascript">
     function logout() {

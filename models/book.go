@@ -149,3 +149,34 @@ func (m *Book) UpdateBookByIdentify(fields ...string) error {
 	_, err := o.Update(m, fields...)
 	return err
 }
+
+func (m *Book) SearchBook(keyword string, page, page_size int) (books []Book, cnt int, err error) {
+	if "" == keyword {
+		err = errors.New("keyword cannot been null")
+		return
+	}
+	o := GetOrm("r")
+	sql := "select count(*) cnt from "+ TNBook()+" where book_name like '%"+keyword+"%' or description like '%"+keyword+"%'"
+	logs.Debug(sql)
+	cnt = 0
+	var param []orm.Params
+	_,err = o.Raw(sql).Values(&param)
+	if err != nil {
+		return
+	}
+
+	if len(param) > 0 {
+		cnt, _ = strconv.Atoi(param[0]["cnt"].(string))
+	} else {
+		cnt = 0
+		err = errors.New("cannot find any books")
+		return
+	}
+
+	sql = "select * from "+ TNBook()+" where book_name like '%"+keyword+"%' or description like '%"+keyword+"%'"
+	sql2 := fmt.Sprintf(" limit %v,%v", (page-1)*page_size, page_size)
+	sql = sql+sql2
+	logs.Debug(sql)
+	_,err = o.Raw(sql).QueryRows(&books)
+	return
+}
