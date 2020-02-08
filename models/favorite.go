@@ -351,3 +351,113 @@ func (m *Favorite) ListFavoriteByUserIdReturnUserFav3(page, page_size int) (book
 	cnt,err = o.Raw(sql).QueryRows(&book_favs)
 	return
 }
+
+func (m *Favorite) ListFavoriteByUserIdReturnUserFavbak(page, page_size int) (book_favs []UserFavorite, cnt int64, err error) {
+	if m.UserId <= 0 {
+		err = errors.New("Invalid argument")
+		return
+	}
+	sql := "select id,user_id,identify from "+TNFavorite()+" where user_id="+strconv.Itoa(m.UserId)+" limit %v offset %v"
+	sql = fmt.Sprintf(sql, page_size, (page-1)*page_size)
+	logs.Debug(sql)
+	o := GetOrm("ur")
+	if cnt,err = o.Raw(sql).QueryRows(&book_favs); err != nil {
+		logs.Debug("ListFavoriteByUserIdReturnUserFavGC:",err.Error())
+		return
+	}
+	var identifies []string
+	for _, bf := range book_favs {
+		if "" != bf.Identify {
+			identifies = append(identifies, bf.Identify)
+		}
+	}
+	if 0 == len(identifies) {
+		return
+	}
+	identifies_str := "('"
+	identifies_str += strings.Join(identifies, "','")
+	identifies_str += "')"
+	sql = `select (case when r.lend_status=0 then '可借' when r.lend_status=5 then '已下架' when r.lend_status=1 and r.user_id=`+
+		strconv.Itoa(m.UserId)+
+		` then '正在借阅' when r.lend_status=1 and r.user_id<>`+
+		strconv.Itoa(m.UserId)+
+		` then '不可借' end) as lend_status,identify from `+
+		TNBookRecord()+ ` r where r.identify in` + identifies_str
+	logs.Debug(sql)
+	type Status struct {
+		Lend_status string
+		Identify string
+	}
+	var statusObj []Status
+	o = GetOrm("r")
+	if cnt,err = o.Raw(sql).QueryRows(&statusObj); err != nil {
+		return
+	}
+	statusMap := make(map[string]string, cnt)
+	for _,o := range statusObj {
+		statusMap[o.Identify]=o.Lend_status
+	}
+
+	sql = `select book_name,cover,author,identify from `+TNBook()+` where identify in` + identifies_str
+	logs.Debug(sql)
+	type TempBook struct {
+		BookName string
+		Cover string
+		Author string
+		Identify string
+	}
+	var bookObj []TempBook
+	if cnt,err = o.Raw(sql).QueryRows(&bookObj); err != nil {
+		return
+	}
+	bookMap := make(map[string]TempBook, cnt)
+	for _,b := range bookObj {
+		bookMap[b.Identify]=b
+	}
+
+	sql = `select category_id,identify from `+ TNBookCategory()+ ` where identify in` + identifies_str
+	logs.Debug(sql)
+	type TempBookCategory struct{
+		CategoryId int
+		Identify string
+	}
+	var bcategoryObj []TempBookCategory
+	if cnt,err = o.Raw(sql).QueryRows(&bcategoryObj); err != nil {
+		return
+	}
+	bcategoryMap := make(map[string]int, cnt)
+	var cids []string
+	for _, c := range bcategoryObj {
+		bcategoryMap[c.Identify] = c.CategoryId
+		cids = append(cids, strconv.Itoa(c.CategoryId))
+	}
+
+	cids_str := "('"
+	cids_str += strings.Join(cids, "','")
+	cids_str += "')"
+	sql = `select category_name from `+TNCategory()+` where id in`+cids_str
+	logs.Debug(sql)
+	type TempCategory struct {
+		CategoryId int
+		CategoryName string
+	}
+	//categoryObj := make([]TempCategory, 0)
+	var categoryObj []TempCategory
+	if _,err = o.Raw(sql).QueryRows(&categoryObj); err != nil {
+		return
+	}
+	categoryMap := make(map[int]TempCategory, 20)
+	for _,c := range categoryObj {
+		categoryMap[c.CategoryId] = c
+	}
+	for i:=0;i<len(book_favs);i++{
+		book_favs[i].LendStatus = statusMap[book_favs[i].Identify]
+		book_favs[i].BookName = bookMap[book_favs[i].Identify].BookName
+		book_favs[i].Author = bookMap[book_favs[i].Identify].Author
+		book_favs[i].Cover = bookMap[book_favs[i].Identify].Cover
+		book_favs[i].CategoryId = bcategoryMap[book_favs[i].Identify]
+		book_favs[i].CategoryName = categoryMap[book_favs[i].CategoryId].CategoryName
+	}
+
+	return
+}

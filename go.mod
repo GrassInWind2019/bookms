@@ -10,4 +10,5 @@ require (
 	github.com/pkg/errors v0.8.0
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/sony/sonyflake v1.0.0
+	golang.org/x/tools v0.0.0-20190328211700-ab21143f2384
 )

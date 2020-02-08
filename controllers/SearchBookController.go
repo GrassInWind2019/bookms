@@ -14,5 +14,6 @@ func (c *SearchBookController) SearchBooks() {
 	}
 	c.Data["SearchBooks"] = books
 	c.Data["Count"] = cnt
+	c.Data["KeyWord"] = keyword
 	c.TplName="search/search.html"
 }

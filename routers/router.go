@@ -23,6 +23,7 @@ func init() {
     beego.Router("/usercenterfav/:page", &controllers.UserController{}, "*:GetUserCenterFav")
     beego.Router("/usercenterfav2/:page", &controllers.UserController{}, "*:GetUserCenterFav2")
     beego.Router("/usercenterfav3/:page", &controllers.UserController{}, "*:GetUserCenterFav3")
+	beego.Router("/usercenterfavbak/:page", &controllers.UserController{}, "*:GetUserCenterFavbak")
 
     //category
     beego.Router("/addcategory", &controllers.CategoryController{}, "*:AddCategory")

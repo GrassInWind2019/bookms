@@ -13,6 +13,8 @@ type UserController struct {
 	AuthController
 }
 
+var total time.Duration
+
 func (c *UserController) FavoriteDo() {
 	identify := c.GetString(":identify")
 	fav := models.Favorite{
@@ -288,6 +290,42 @@ func (c *UserController) GetUserCenterFav3() {
 	if err != nil {
 		c.JsonResult(500, err.Error())
 	}
+	is_admin := user.IsAdmin()
+	c.Data["IsAdmin"] = is_admin
+
+	c.Data["UserInfo"] = *user
+	if 0 >= cnt {
+		c.Data["MyFavoriteCount"] = 0
+	} else {
+		c.Data["MyFavoriteCount"] = cnt
+		c.Data["MyFavorite"] = books
+	}
+	c.TplName = "user/userCenter.html"
+}
+
+func (c *UserController) GetUserCenterFavbak() {
+	user := &models.User{
+		Id:c.Muser.Id,
+	}
+	user,err := user.Find(c.Muser.Id)
+	if err != nil {
+		c.JsonResult(500, err.Error())
+	}
+	var page int
+	page,err = c.GetInt(":page", 1)
+	if err != nil {
+		page = 1
+	}
+	fav := models.Favorite{
+		UserId:c.Muser.Id,
+	}
+	t := time.Now()
+	books, cnt, err := fav.ListFavoriteByUserIdReturnUserFavbak(page,200)
+	if err != nil {
+		c.JsonResult(500, err.Error())
+	}
+	total += time.Since(t)
+	logs.Warn("GetUserCenterFavGC: current: ",time.Since(t), " total: ", total)
 	is_admin := user.IsAdmin()
 	c.Data["IsAdmin"] = is_admin
 

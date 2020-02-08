@@ -51,6 +51,13 @@ func (c *LoginController) Login() {
 func (c *LoginController) Logout() {
 	logs.Info("logout")
 	c.SetSecureCookie(secretCookie, "user", "", 0)
+	sess,err := GlobalSessions.SessionStart(c.Ctx.ResponseWriter, c.Ctx.Request)
+	if err != nil {
+		logs.Error(err.Error())
+		c.Abort("500")
+	}
+	defer sess.SessionRelease(c.Ctx.ResponseWriter)
+	sess.Delete("user")
 	//c.JsonResult(200, "登出成功")
 	c.Success("登出成功",beego.URLFor("HomeController.Index"), 3)
 	//c.StopRun()
