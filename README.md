@@ -6,10 +6,19 @@ bookms是一个简易的图书管理系统。
 ![bookms功能示意图](https://raw.githubusercontent.com/GrassInWind2019/bookms/master/readme/bookms%E5%8A%9F%E8%83%BD%E7%A4%BA%E6%84%8F%E5%9B%BE.png)
 ## bookms收藏功能sql优化 
 ### 优化前 
-API: /usercenterfav/201
+API: /usercenterfav/201 
 sql示例： 
 ```
-mysql> explain select f.id,f.user_id,f.identify,b.book_name,b.cover,b.author,bc.category_id,c.category_name,(case when r.lend_status=0 then '可借' when r.lend_status=5 then '已下架' when r.lend_status=1 and r.user_id=1 then '正在借阅' when r.lend_status=1 and r.user_id<>1 then '不可借' end) as lend_status from bookms_book_record r left join bookms_book b using(identify) left join bookms_book_category bc using(identify) inner join bookms_user_favorite f using(identify) left join bookms_category c on bc.category_id=c.id where f.user_id=1 limit 100 offset 20000;
+mysql> explain select f.id,f.user_id,f.identify,b.book_name,b.cover,b.author,bc.category_id,c.category_name,
+(case when r.lend_status=0 then '可借' 
+when r.lend_status=5 then '已下架' 
+when r.lend_status=1 and r.user_id=1 then '正在借阅' 
+when r.lend_status=1 and r.user_id<>1 then '不可借' 
+end) as lend_status from bookms_book_record r 
+left join bookms_book b using(identify) 
+left join bookms_book_category bc using(identify) 
+inner join bookms_user_favorite f using(identify) 
+left join bookms_category c on bc.category_id=c.id where f.user_id=1 limit 100 offset 20000;
 +----+-------------+-------+------------+--------+-----------------------------------+-----------------------------------+---------+-----------------------+--------+----------+-------------+
 | id | select_type | table | partitions | type   | possible_keys                     | key                               | key_len | ref                   | rows   | filtered | Extra       |
 +----+-------------+-------+------------+--------+-----------------------------------+-----------------------------------+---------+-----------------------+--------+----------+-------------+
@@ -37,11 +46,19 @@ Time per request:       9149.661 [ms] (mean)
 Time per request:       914.966 [ms] (mean, across all concurrent requests)
 ```
 ### 优化1 
-API: /usercenterfav3/201 
-先通过子查询(select fav.id,fav.user_id,fav.identify from bookms_user_favorite fav where fav.user_id=1 limit 100 offset 20000)查出收藏的图书的标识信息再关联查询。
+API: /usercenterfav3/201  
+先通过子查询(select fav.id,fav.user_id,fav.identify from bookms_user_favorite fav where fav.user_id=1 limit 100 offset 20000)查出收藏的图书的标识信息再关联查询。 
 sql示例： 
 ```
-mysql> explain select f.id,f.user_id,f.identify,b.book_name,b.cover,b.author,bc.category_id,c.category_name,(case when r.lend_status=0 then '可借' when r.lend_status=5 then '已下架' when r.lend_status=1 and r.user_id=1 then '正在借阅' when r.lend_status=1 and r.user_id<>1 then '不可借' end) as lend_status from bookms_book_record r left join bookms_book b using(identify) left join bookms_book_category bc using(identify) inner join (select fav.id,fav.user_id,fav.identify from bookms_user_favorite fav where fav.user_id=1 limit 100 offset 20000) f using(user_id) left join bookms_category c on bc.category_id=c.id where f.user_id=1 limit 100 offset 20000;
+mysql> explain select f.id,f.user_id,f.identify,b.book_name,b.cover,b.author,bc.category_id,c.category_name,
+(case when r.lend_status=0 then '可借' 
+when r.lend_status=5 then '已下架' 
+when r.lend_status=1 and r.user_id=1 then '正在借阅' 
+when r.lend_status=1 and r.user_id<>1 then '不可借' 
+end) as lend_status from bookms_book_record r 
+left join bookms_book b using(identify) 
+left join bookms_book_category bc using(identify) 
+inner join (select fav.id,fav.user_id,fav.identify from bookms_user_favorite fav where fav.user_id=1 limit 100 offset 20000) f using(user_id) left join bookms_category c on bc.category_id=c.id where f.user_id=1 limit 100 offset 20000;
 +----+-------------+------------+------------+--------+-----------------------------------+-----------------------------------+---------+-----------------------+---------+----------+----------------------------------------------------+
 | id | select_type | table      | partitions | type   | possible_keys                     | key                               | key_len | ref                   | rows    | filtered | Extra                                              |
 +----+-------------+------------+------------+--------+-----------------------------------+-----------------------------------+---------+-----------------------+---------+----------+----------------------------------------------------+
@@ -70,11 +87,16 @@ Time per request:       242.064 [ms] (mean)
 Time per request:       24.206 [ms] (mean, across all concurrent requests)
 ```
 ### 优化2 
-API: /usercenterfav2/201 
-通过将多表关联查询拆分成多个简单查询来提升查询效率。 
-sql示例： 
+API: /usercenterfav2/201  
+通过将多表关联查询拆分成多个简单查询来提升查询效率。  
+sql示例：  
 ```
-select (case when r.lend_status=0 then '可借' when r.lend_status=5 then '已下架' when r.lend_status=1 and r.user_id=1 then '正在借阅' when r.lend_status=1 and r.user_id<>1 then '不可借' end) as lend_status,identify from bookms_book_record r where r.identify in(...)
+select (case 
+when r.lend_status=0 then '可借' 
+when r.lend_status=5 then '已下架' 
+when r.lend_status=1 and r.user_id=1 then '正在借阅' 
+when r.lend_status=1 and r.user_id<>1 then '不可借' 
+end) as lend_status,identify from bookms_book_record r where r.identify in(...)
 
 select book_name,cover,author,identify from bookms_book where identify in(...)
 
