@@ -20,6 +20,9 @@ unique key `account` (`account`),
 unique key `email` (`email`),
 unique key `phone` (`phone`)
 ) engine=InnoDB auto_increment=2 default charset=utf8mb4;
+-- 管理员账号GrassInWind 密码123
+insert into bookms_user.bookms_user_user(id,account,nickname,password,phone,email,role,avatar,status,create_time,last_login_time,biography)
+values('1', 'GrassInWind', 'GrassInWind', '3632366636663662366437333033336362363134323664633263323861666534303031373738643835316165202cb962ac59075b964b07152d234b70', '13012345678', 'GrassInWind@sina.cn', '0', '', '0', '2020-02-12 14:50:51', '2020-02-12 03:52:34', '普通用户');
 
 create table if not exists `bookms_user_favorite` (
 `id` int(11) not null auto_increment,
