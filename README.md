@@ -6,7 +6,7 @@ bookms是一个简易的图书管理系统。
 ![bookms功能示意图](https://raw.githubusercontent.com/GrassInWind2019/bookms/master/readme/bookms%E5%8A%9F%E8%83%BD%E7%A4%BA%E6%84%8F%E5%9B%BE.png)
 ## bookms收藏功能sql优化 
 ### 优化前 
-API: /usercenterfav/201 
+API: /usercenterfav/201  
 sql示例： 
 ```
 mysql> explain select f.id,f.user_id,f.identify,b.book_name,b.cover,b.author,bc.category_id,c.category_name,
@@ -47,8 +47,8 @@ Time per request:       914.966 [ms] (mean, across all concurrent requests)
 ```
 ### 优化1 
 API: /usercenterfav3/201  
-先通过子查询(select fav.id,fav.user_id,fav.identify from bookms_user_favorite fav where fav.user_id=1 limit 100 offset 20000)查出收藏的图书的标识信息再关联查询。 
-sql示例： 
+先通过子查询(select fav.id,fav.user_id,fav.identify from bookms_user_favorite fav where fav.user_id=1 limit 100 offset 20000)查出收藏的图书的标识信息再关联查询。  
+sql示例：  
 ```
 mysql> explain select f.id,f.user_id,f.identify,b.book_name,b.cover,b.author,bc.category_id,c.category_name,
 (case when r.lend_status=0 then '可借' 
@@ -147,4 +147,5 @@ db=0
 ### nginx配置 
 nginx配置文件见nginx_conf目录，本人所用nginx版本为nginx-1.16.1。 
 
-
+## 开发备忘录 
+详见 https://github.com/GrassInWind2019/bookms/blob/master/readme/develop%20memo/Readme.md 
