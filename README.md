@@ -120,3 +120,30 @@ Requests per second:    178.62 [#/sec] (mean)
 Time per request:       55.986 [ms] (mean)
 Time per request:       5.599 [ms] (mean, across all concurrent requests)
 ```
+### bookms收藏功能优化操作流程 
+详见https://github.com/GrassInWind2019/bookms/tree/master/readme/sql%20optimize 
+
+## bookms使用简介 
+### 创建数据库及表 
+执行book.sql和user.sql即可创建。执行完毕，管理员账号为GrassInWind，密码123 
+### 配置redis 
+默认redis连接密码为123，可通过conf/app.conf修改 
+```
+#session
+sessionon = true
+ProviderConfig=localhost:6379,1000,123
+#redis
+server=127.0.0.1:6379
+password=123
+max_active_connection=1000
+max_idle_connection=50
+db=0
+```
+### 添加图书分类 
+在登录后访问http://localhost:8080/addcategory即可添加分类 
+### 添加图书 
+管理员在个人中心页面可通过添加图书按钮添加 
+### nginx配置 
+nginx配置文件见nginx_conf目录，本人所用nginx版本为nginx-1.16.1。 
+
+
