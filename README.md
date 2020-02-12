@@ -58,7 +58,8 @@ when r.lend_status=1 and r.user_id<>1 then '不可借'
 end) as lend_status from bookms_book_record r 
 left join bookms_book b using(identify) 
 left join bookms_book_category bc using(identify) 
-inner join (select fav.id,fav.user_id,fav.identify from bookms_user_favorite fav where fav.user_id=1 limit 100 offset 20000) f using(user_id) left join bookms_category c on bc.category_id=c.id where f.user_id=1 limit 100 offset 20000;
+inner join (select fav.id,fav.user_id,fav.identify from bookms_user_favorite fav where fav.user_id=1 limit 100 offset 20000) f using(user_id) 
+left join bookms_category c on bc.category_id=c.id where f.user_id=1 limit 100 offset 20000;
 +----+-------------+------------+------------+--------+-----------------------------------+-----------------------------------+---------+-----------------------+---------+----------+----------------------------------------------------+
 | id | select_type | table      | partitions | type   | possible_keys                     | key                               | key_len | ref                   | rows    | filtered | Extra                                              |
 +----+-------------+------------+------------+--------+-----------------------------------+-----------------------------------+---------+-----------------------+---------+----------+----------------------------------------------------+
@@ -140,7 +141,7 @@ max_idle_connection=50
 db=0
 ```
 ### 添加图书分类 
-在登录后访问http://localhost:8080/addcategory即可添加分类 
+在登录后访问http://localhost:8080/addcategory 即可添加分类 
 ### 添加图书 
 管理员在个人中心页面可通过添加图书按钮添加 
 ### nginx配置 
