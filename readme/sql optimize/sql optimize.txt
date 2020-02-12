@@ -1,0 +1,78 @@
+/usercenterfav/201
+explain select f.id,f.user_id,f.identify,b.book_name,b.cover,b.author,bc.category_id,c.category_name,(case when r.lend_status=0 then '可借' when r.lend_status=5 then '已下架' when r.lend_status=1 and r.user_id=1 then '正在借阅' when r.lend_status=1 and r.user_id<>1 then '不可借' end) as lend_status from bookms_book_record r left join bookms_book b using(identify) left join bookms_book_category bc using(identify) inner join bookms_user_favorite f using(identify) left join bookms_category c on bc.category_id=c.id where f.user_id=1 limit 100 offset 20000;
+mysql> explain select f.id,f.user_id,f.identify,b.book_name,b.cover,b.author,bc.category_id,c.category_name,(case when r.lend_status=0 then '可借' when r.lend_status=5 then '已下架' when r.lend_status=1 and r.user_id=1 then '正在借阅' when r.lend_status=1 and r.user_id<>1 then '不可借' end) as lend_status from bookms_book_record r left join bookms_book b using(identify) left join bookms_book_category bc using(identify) inner join bookms_user_favorite f using(identify) left join bookms_category c on bc.category_id=c.id where f.user_id=1 limit 100 offset 20000;
++----+-------------+-------+------------+--------+-----------------------------------+-----------------------------------+---------+-----------------------+--------+----------+-------------+
+| id | select_type | table | partitions | type   | possible_keys                     | key                               | key_len | ref                   | rows   | filtered | Extra       |
++----+-------------+-------+------------+--------+-----------------------------------+-----------------------------------+---------+-----------------------+--------+----------+-------------+
+|  1 | SIMPLE      | f     | NULL       | ALL    | idx_bookms_user_favorite_identify | NULL                              | NULL    | NULL                  | 202810 |    10.00 | Using where |
+|  1 | SIMPLE      | r     | NULL       | ref    | idx_bookms_book_record_identify   | idx_bookms_book_record_identify   | 302     | bookms.f.identify     |      1 |   100.00 | NULL        |
+|  1 | SIMPLE      | b     | NULL       | eq_ref | identify                          | identify                          | 402     | func                  |      1 |   100.00 | Using where |
+|  1 | SIMPLE      | bc    | NULL       | ref    | idx_bookms_book_category_identify | idx_bookms_book_category_identify | 302     | bookms.f.identify     |      1 |   100.00 | NULL        |
+|  1 | SIMPLE      | c     | NULL       | eq_ref | PRIMARY                           | PRIMARY                           | 4       | bookms.bc.category_id |      1 |   100.00 | NULL        |
++----+-------------+-------+------------+--------+-----------------------------------+-----------------------------------+---------+-----------------------+--------+----------+-------------+
+5 rows in set, 1 warning (0.00 sec)
+
+Document Path:          /usercenterfav/201
+Document Length:        21876 bytes
+
+Concurrency Level:      10
+Time taken for tests:   91.497 seconds
+Complete requests:      100
+Failed requests:        0
+Total transferred:      2207400 bytes
+HTML transferred:       2187600 bytes
+Requests per second:    1.09 [#/sec] (mean)
+Time per request:       9149.661 [ms] (mean)
+Time per request:       914.966 [ms] (mean, across all concurrent requests)
+
+
+/usercenterfav2/201
+select (case when r.lend_status=0 then '可借' when r.lend_status=5 then '已下架' when r.lend_status=1 and r.user_id=1 then '正在借阅' when r.lend_status=1 and r.user_id<>1 then '不可借' end) as lend_status,identify from bookms_book_record r where r.identify in('test-identify99738','test-identify99746','test-identify99747','test-identify99758','test-identify99759','test-identify99761','test-identify99775','test-identify99779','test-identify99784','test-identify99788','test-identify99789','test-identify99795','test-identify99796','test-identify99801','test-identify99803','test-identify99806','test-identify99812','test-identify99813','test-identify99815','test-identify99818','test-identify99820','test-identify99830','test-identify99833','test-identify99834','test-identify99836','test-identify99838','test-identify99849','test-identify99854','test-identify99884','test-identify99889','test-identify99898','test-identify99899','test-identify99909','test-identify99912','test-identify99913','test-identify99924','test-identify99926','test-identify99937','test-identify99946','test-identify99947','test-identify99948','test-identify99950','test-identify99961','test-identify99962','test-identify99973','test-identify99977','test-identify99978','test-identify99981','test-identify99986','test-identify99988','test-identify99990','test-identify99995','test-identify99998','test-identify100000','test-identify100002','test-identify100010','test-identify100011','test-identify100014','test-identify100024','test-identify100027','test-identify100034','test-identify100047','test-identify100054','test-identify100062','test-identify100075','test-identify100080','test-identify100082','test-identify100087','test-identify100091','test-identify100098','test-identify100099','test-identify100102','test-identify100113','test-identify100117','test-identify100124','test-identify100139','test-identify100146','test-identify100154','test-identify100158','test-identify100168','test-identify100170','test-identify100172','test-identify100176','test-identify100181','test-identify100194','test-identify100198','test-identify100202','test-identify100206','test-identify100208','test-identify100214','test-identify100215','test-identify100216','test-identify100220','test-identify100222','test-identify100231','test-identify100239','test-identify100242','test-identify100243','test-identify100250','test-identify100251')
+
+select book_name,cover,author,identify from bookms_book where identify in('test-identify99738','test-identify99746','test-identify99747','test-identify99758','test-identify99759','test-identify99761','test-identify99775','test-identify99779','test-identify99784','test-identify99788','test-identify99789','test-identify99795','test-identify99796','test-identify99801','test-identify99803','test-identify99806','test-identify99812','test-identify99813','test-identify99815','test-identify99818','test-identify99820','test-identify99830','test-identify99833','test-identify99834','test-identify99836','test-identify99838','test-identify99849','test-identify99854','test-identify99884','test-identify99889','test-identify99898','test-identify99899','test-identify99909','test-identify99912','test-identify99913','test-identify99924','test-identify99926','test-identify99937','test-identify99946','test-identify99947','test-identify99948','test-identify99950','test-identify99961','test-identify99962','test-identify99973','test-identify99977','test-identify99978','test-identify99981','test-identify99986','test-identify99988','test-identify99990','test-identify99995','test-identify99998','test-identify100000','test-identify100002','test-identify100010','test-identify100011','test-identify100014','test-identify100024','test-identify100027','test-identify100034','test-identify100047','test-identify100054','test-identify100062','test-identify100075','test-identify100080','test-identify100082','test-identify100087','test-identify100091','test-identify100098','test-identify100099','test-identify100102','test-identify100113','test-identify100117','test-identify100124','test-identify100139','test-identify100146','test-identify100154','test-identify100158','test-identify100168','test-identify100170','test-identify100172','test-identify100176','test-identify100181','test-identify100194','test-identify100198','test-identify100202','test-identify100206','test-identify100208','test-identify100214','test-identify100215','test-identify100216','test-identify100220','test-identify100222','test-identify100231','test-identify100239','test-identify100242','test-identify100243','test-identify100250','test-identify100251')
+
+select category_id,identify from bookms_book_category where identify in('test-identify99738','test-identify99746','test-identify99747','test-identify99758','test-identify99759','test-identify99761','test-identify99775','test-identify99779','test-identify99784','test-identify99788','test-identify99789','test-identify99795','test-identify99796','test-identify99801','test-identify99803','test-identify99806','test-identify99812','test-identify99813','test-identify99815','test-identify99818','test-identify99820','test-identify99830','test-identify99833','test-identify99834','test-identify99836','test-identify99838','test-identify99849','test-identify99854','test-identify99884','test-identify99889','test-identify99898','test-identify99899','test-identify99909','test-identify99912','test-identify99913','test-identify99924','test-identify99926','test-identify99937','test-identify99946','test-identify99947','test-identify99948','test-identify99950','test-identify99961','test-identify99962','test-identify99973','test-identify99977','test-identify99978','test-identify99981','test-identify99986','test-identify99988','test-identify99990','test-identify99995','test-identify99998','test-identify100000','test-identify100002','test-identify100010','test-identify100011','test-identify100014','test-identify100024','test-identify100027','test-identify100034','test-identify100047','test-identify100054','test-identify100062','test-identify100075','test-identify100080','test-identify100082','test-identify100087','test-identify100091','test-identify100098','test-identify100099','test-identify100102','test-identify100113','test-identify100117','test-identify100124','test-identify100139','test-identify100146','test-identify100154','test-identify100158','test-identify100168','test-identify100170','test-identify100172','test-identify100176','test-identify100181','test-identify100194','test-identify100198','test-identify100202','test-identify100206','test-identify100208','test-identify100214','test-identify100215','test-identify100216','test-identify100220','test-identify100222','test-identify100231','test-identify100239','test-identify100242','test-identify100243','test-identify100250','test-identify100251')
+
+select category_name from bookms_category where id in(11,10,9,8,10,9,7,11,10,6,10,9,10,8,8,7,8,10,7,10,6,9,11,6,6,9,6,11,11,7,8,7,8,9,11,11,11,9,8,11,6,6,8,8,10,7,6,10,7,6,6,8,8,10,9,9,6,11,9,6,6,11,7,10,11,11,7,11,8,11,8,7,10,10,11,9,7,9,9,6,9,8,7,11,11,10,8,9,6,9,10,7,6,10,8,8,10,7,8,6)
+
+Document Path:          /usercenterfav2/201
+Document Length:        21168 bytes
+
+Concurrency Level:      10
+Time taken for tests:   5.599 seconds
+Complete requests:      1000
+Failed requests:        0
+Total transferred:      21366000 bytes
+HTML transferred:       21168000 bytes
+Requests per second:    178.62 [#/sec] (mean)
+Time per request:       55.986 [ms] (mean)
+Time per request:       5.599 [ms] (mean, across all concurrent requests)
+
+/usercenterfav3/201
+explain select f.id,f.user_id,f.identify,b.book_name,b.cover,b.author,bc.category_id,c.category_name,(case when r.lend_status=0 then '可借' when r.lend_status=5 then '已下架' when r.lend_status=1 and r.user_id=1 then '正在借阅' when r.lend_status=1 and r.user_id<>1 then '不可借' end) as lend_status from bookms_book_record r left join bookms_book b using(identify) left join bookms_book_category bc using(identify) inner join (select fav.id,fav.user_id,fav.identify from bookms_user_favorite fav where fav.user_id=1 limit 100 offset 20000) f using(user_id) left join bookms_category c on bc.category_id=c.id where f.user_id=1 limit 100 offset 20000;
+mysql> explain select f.id,f.user_id,f.identify,b.book_name,b.cover,b.author,bc.category_id,c.category_name,(case when r.lend_status=0 then '可借' when r.lend_status=5 then '已下架' when r.lend_status=1 and r.user_id=1 then '正在借阅' when r.lend_status=1 and r.user_id<>1 then '不可借' end) as lend_status from bookms_book_record r left join bookms_book b using(identify) left join bookms_book_category bc using(identify) inner join (select fav.id,fav.user_id,fav.identify from bookms_user_favorite fav where fav.user_id=1 limit 100 offset 20000) f using(user_id) left join bookms_category c on bc.category_id=c.id where f.user_id=1 limit 100 offset 20000;
++----+-------------+------------+------------+--------+-----------------------------------+-----------------------------------+---------+-----------------------+---------+----------+----------------------------------------------------+
+| id | select_type | table      | partitions | type   | possible_keys                     | key                               | key_len | ref                   | rows    | filtered | Extra                                              |
++----+-------------+------------+------------+--------+-----------------------------------+-----------------------------------+---------+-----------------------+---------+----------+----------------------------------------------------+
+|  1 | PRIMARY     | <derived2> | NULL       | ref    | <auto_key0>                       | <auto_key0>                       | 4       | const                 |      10 |   100.00 | NULL                                               |
+|  1 | PRIMARY     | r          | NULL       | ALL    | NULL                              | NULL                              | NULL    | NULL                  | 1004634 |    10.00 | Using where; Using join buffer (Block Nested Loop) |
+|  1 | PRIMARY     | b          | NULL       | eq_ref | identify                          | identify                          | 402     | func                  |       1 |   100.00 | Using where                                        |
+|  1 | PRIMARY     | bc         | NULL       | ref    | idx_bookms_book_category_identify | idx_bookms_book_category_identify | 302     | bookms.r.identify     |       1 |   100.00 | NULL                                               |
+|  1 | PRIMARY     | c          | NULL       | eq_ref | PRIMARY                           | PRIMARY                           | 4       | bookms.bc.category_id |       1 |   100.00 | NULL                                               |
+|  2 | DERIVED     | fav        | NULL       | ALL    | NULL                              | NULL                              | NULL    | NULL                  |  202810 |    10.00 | Using where                                        |
++----+-------------+------------+------------+--------+-----------------------------------+-----------------------------------+---------+-----------------------+---------+----------+----------------------------------------------------+
+6 rows in set, 1 warning (0.00 sec)
+
+Document Path:          /usercenterfav3/201
+Document Length:        21733 bytes
+
+Concurrency Level:      10
+Time taken for tests:   24.206 seconds
+Complete requests:      1000
+Failed requests:        0
+Total transferred:      21931000 bytes
+HTML transferred:       21733000 bytes
+Requests per second:    41.31 [#/sec] (mean)
+Time per request:       242.064 [ms] (mean)
+Time per request:       24.206 [ms] (mean, across all concurrent requests)
+
