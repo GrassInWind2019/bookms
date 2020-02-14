@@ -198,13 +198,6 @@
                 onclick="comments_submit();">发表评论
         </button>
     </div>
-    {{/*<div>*/}}
-        {{/*<!-- input type="text" id="comment" name="comment" value="" placeholder="评论" required/ -->*/}}
-        {{/*评论:<textarea id="comment" name="comment" value="" placeholder="评论" cols="30" rows="10"></textarea><br/>*/}}
-    {{/*</div>*/}}
-    {{/*<div>*/}}
-        {{/*<input class="comments_submit_button" type="submit" value="发表评论">*/}}
-    {{/*</div>*/}}
     <script>
         function getRadioButtonCheckedValue(tagNameAttr){
             var radio_tag = document.getElementsByName(tagNameAttr);
@@ -269,13 +262,13 @@
             <script type="text/javascript">
                 function lend_book(book_id) {
                     var url= "http://localhost:8080/lendbook/"+book_id;
-                    alert(url);
+                    //alert(url);
                     //window.open(url);
                     window.location.href=url;
                 }
                 function return_book(book_id) {
                     var url="http://localhost:8080/returnbook/"+book_id;
-                    alert(url);
+                    //alert(url);
                     window.location.href=url;
                 }
             </script>

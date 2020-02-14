@@ -55,7 +55,8 @@ func (c *GetBookController) GetBooksByIdentify() {
 		identifies = append(identifies, identify)
 		books, err = new(models.Book).GetBooksByIdentifies(identifies)
 		if err != nil {
-			c.JsonResult(400, err.Error())
+			logs.Error("GetBooksByIdentify: GetBooksByIdentifies ", err.Error())
+			c.JsonResult(404, "找不到标识为"+identify+"的书")
 		}
 		err, _ = cache.SetInterface("book-"+identify, books, 3600)
 		if err != nil {
@@ -71,7 +72,8 @@ func (c *GetBookController) GetBooksByIdentify() {
 		logs.Debug("Get book record ", identify, err.Error())
 		book_records, err = new(models.BookRecord).GetBookRecordsByIdentify(identify)
 		if err != nil {
-			c.JsonResult(400, err.Error())
+			logs.Error("GetBooksByIdentify: GetBookRecordsByIdentify ", err.Error())
+			c.JsonResult(500, "获取图书标识为"+identify+"的借阅记录失败")
 		}
 		err,_ = cache.SetInterface("book_record-"+identify, book_records, 600)
 		if err != nil {
@@ -134,7 +136,7 @@ func (c *GetBookController) GetBooksByIdentify() {
 		book_comments, err = new(models.Comments).GetBookCommentsAndScores(identify, 1, 5)
 		if err != nil {
 			//c.JsonResult(500, err.Error())
-			logs.Debug("GetBookCommentsAndScores: ", err.Error())
+			logs.Error("GetBookCommentsAndScores: ", err.Error())
 		}else {
 			cache.SetInterface("book_comments-"+identify,book_comments, 600)
 		}

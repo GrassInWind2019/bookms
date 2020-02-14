@@ -61,6 +61,9 @@
         {{range $idx,$my_favorite:=.MyFavorite}}
             <div style="font-size: 20px;line-height: 32px;color: blue;text-align: center;">
                 {{$my_favorite}}
+                    <a href="http://localhost:8080/bookdetail/{{$my_favorite.Identify}}">
+                        <input type="button" value="查看此书详情"/>
+                    </a>
             </div>
         {{end}}
     {{else}}

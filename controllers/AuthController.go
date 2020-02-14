@@ -55,6 +55,7 @@ func (c *AuthController) Prepare() {
 			return
 		}
 	}
-	c.Redirect(beego.URLFor("LoginController.Login"), 302)
+	//c.Redirect(beego.URLFor("LoginController.Login"), 302)
+	c.Error("cookie missing or invalid", beego.URLFor("LoginController.Login"), 1)
 	c.StopRun()
 }

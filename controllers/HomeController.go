@@ -5,6 +5,7 @@ import (
 	"bookms/models"
 	"bookms/utils"
 	"github.com/astaxie/beego/logs"
+	"strconv"
 )
 
 type HomeController struct {
@@ -50,7 +51,8 @@ func (c *HomeController) Index() {
 		logs.Debug(err.Error())
 		topCategories, err = category.GetTopCategories()
 		if err != nil {
-			c.JsonResult(500, err.Error())
+			logs.Error("Index: GetTopCategories ", err.Error())
+			c.JsonResult(500, "服务器内部错误，获取分类信息失败")
 		}
 		if err,_ = cache.SetInterface("top_categories", topCategories, 3600); err != nil {
 			logs.Debug("set top_categories", err.Error())
@@ -68,13 +70,14 @@ func (c *HomeController) Index() {
 		for _,tCate := range topCategories {
 			cates, err := tCate.GetCategoriesByPid(tCate.Id)
 			if err != nil {
-				//c.JsonResult(500, err.Error())
+				logs.Error("Index: GetCategoriesByPid ", strconv.Itoa(tCate.Id)," ", err.Error())
 			}
 			var book models.Book
 			for _, cate := range cates {
 				books,_,err := book.GetBooksByCategory2(cate.Id, 1, 5)
 				if err != nil {
-					c.JsonResult(500, err.Error())
+					logs.Error("Index: GetBooksByCategory2 ", strconv.Itoa(cate.Id), " ", err.Error())
+					c.JsonResult(500, "获取图书信息失败")
 				}
 				logs.Debug("Index: ", books)
 				homeBooks = append(homeBooks, books...)

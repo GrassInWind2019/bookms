@@ -24,7 +24,7 @@ func (c *LoginController) Login() {
 	if cookie, ok := c.GetSecureCookie(secretCookie, "user"); ok {
 		if err := utils.Decode(cookie, *u); err == nil {
 			if err = c.login(u.Id); err == nil {
-				c.Redirect(beego.URLFor("MainController.Get"), 302)
+				c.Redirect(beego.URLFor("HomeController.Index"), 302)
 				c.StopRun()
 			}
 		}
@@ -34,13 +34,14 @@ func (c *LoginController) Login() {
 		account := c.GetString("账号")
 		password := c.GetString("密码")
 		if account == "" || password == "" {
-			c.JsonResult(400, "账号或密码为空,登录失败")
+			c.JsonResult(401, "账号或密码为空,登录失败")
 		}
 		u, err := u.Login(account, password)
 		if err != nil {
-			c.JsonResult(400, "账号或密码错误,登录失败")
+			c.JsonResult(403, "账号或密码错误,登录失败")
 		}
 		if err := c.login(u.Id); err != nil {
+			logs.Error("Login: login ", err.Error())
 			c.JsonResult(500, "Internal error")
 		}
 		c.Success("登录成功",beego.URLFor("HomeController.Index"), 3)
@@ -53,14 +54,12 @@ func (c *LoginController) Logout() {
 	c.SetSecureCookie(secretCookie, "user", "", 0)
 	sess,err := GlobalSessions.SessionStart(c.Ctx.ResponseWriter, c.Ctx.Request)
 	if err != nil {
-		logs.Error(err.Error())
+		logs.Error("Logout: ",err.Error())
 		c.Abort("500")
 	}
 	defer sess.SessionRelease(c.Ctx.ResponseWriter)
 	sess.Delete("user")
-	//c.JsonResult(200, "登出成功")
 	c.Success("登出成功",beego.URLFor("HomeController.Index"), 3)
-	//c.StopRun()
 }
 
 func (c *LoginController) Register() {
@@ -77,13 +76,13 @@ func (c *LoginController) RegisterDo() {
 	biography := c.GetString("Biography")
 
 	if password1 != password2 {
-		c.JsonResult(1, "两次输入密码不一致，请重新输入！")
+		c.JsonResult(400, "两次输入密码不一致，请重新输入！")
 	}
 	if strings.Count(nickName, "") > 20 {
-		c.JsonResult(2, "昵称长度不能超过20")
+		c.JsonResult(400, "昵称长度不能超过20")
 	}
 	if strings.Count(biography, "") > 150 {
-		c.JsonResult(3, "个人简介不能超过150个字")
+		c.JsonResult(400, "个人简介不能超过150个字")
 	}
 
 	u := models.User{
@@ -100,11 +99,10 @@ func (c *LoginController) RegisterDo() {
 	}
 
 	if err := u.Add(); err != nil {
-		beego.Error(err.Error())
-		c.JsonResult(400, err.Error())
+		logs.Error("RegisterDo: ",err.Error())
+		c.JsonResult(500, err.Error())
 	}
 	c.login(u.Id)
-	//c.JsonResult(200, "注册成功")
 	c.Success("注册成功", beego.URLFor("HomeController.Index"), 3)
 }
 

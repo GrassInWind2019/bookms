@@ -27,17 +27,18 @@ begin
         if mod(Var,50000)=0 then
 			select concat('Var=',Var);
 		end if;
-        set j = floor(rand()*10000+1); -- 1-10000
-        if j <= 5 then
+		set lend_status = 0;
+    set j = floor(rand()*10000+1); -- 1-10000
+    if j <= 5 then
 			set lend_status = 5; -- 已下架
 		end if;
 		set cid=floor(rand()*6+6);
         insert into bookms_book(book_name,identify,`description`,catalog,cover,`status`,sort,create_time,doc_count,comment_count,favorite_count,score,score_count,author,book_count,average_score) values("test book", CONCAT('test-identify', Var),"test description", "test catalog",'',0,1,Now(),0,0,0,0,0,"GrassInWind",3,0);
-        insert into bookms_book_record(identify,`lend_status`,`user_id`,lend_time,return_time,lend_count,store_position) values(CONCAT('test-identify', Var),lend_status,user_id,Now(),Now(),0, "test store position");
+        insert into bookms_book_record(identify,`lend_status`,`user_id`,lend_time,return_time,lend_count,store_position) values(CONCAT('test-identify', Var),lend_status,user_id,Now(),Now(),1, "test store position");
         insert into bookms_book_category(identify, category_id) values(CONCAT('test-identify', Var), cid);
         set k = floor(rand()*100+1);
         if k <= 20 then
-			insert into bookms_user_favorite(`user_id`,identify) values(user_id, CONCAT('test-identify', Var));
+			    insert into bookms_user_favorite(`user_id`,identify) values(user_id, CONCAT('test-identify', Var));
         end if;
         set Var = Var + 1;
 	end while loop1;

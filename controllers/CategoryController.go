@@ -1,6 +1,9 @@
 package controllers
 
-import "bookms/models"
+import (
+	"bookms/models"
+	"github.com/astaxie/beego/logs"
+)
 
 type CategoryController struct {
 	BaseController
@@ -28,7 +31,8 @@ func (c *CategoryController) AddCategory() {
 		}
 		err = category.AddCategory()
 		if err != nil {
-			c.JsonResult(500, err.Error())
+			logs.Error("AddCategory: ", err.Error())
+			c.JsonResult(500, "添加分类失败")
 		}
 		c.JsonResult(200, "添加成功")
 	}

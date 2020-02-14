@@ -32,7 +32,6 @@ func init() {
     beego.Router("/addbook", &controllers.BookController{}, "*:AddBook")
     beego.Router("/updatebook/:identify", &controllers.BookController{}, "*:UpdateBookByIdentify")
     beego.Router("/deletebook/:identify", &controllers.BookController{}, "*:DeleteBooksByIdentify")
-    beego.Router("/deletebook/:book_id", &controllers.BookController{}, "*:DeleteBookById")
     beego.Router("/lendbook/:book_id", &controllers.BookController{}, "*:LendBookById")
     beego.Router("/returnbook/:book_id", &controllers.BookController{}, "*:ReturnBookById")
     beego.Router("/bookdetail/:identify", &controllers.GetBookController{}, "get:GetBooksByIdentify")

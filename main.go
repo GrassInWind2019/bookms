@@ -7,16 +7,14 @@ import (
 	_ "bookms/routers"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
+	_ "net/http/pprof"
 	"os"
 	"runtime"
 	"runtime/pprof"
-	"time"
-
-	_ "net/http/pprof"
 )
 
 func main() {
-	logs.SetLevel(logs.LevelWarn)
+	logs.SetLevel(logs.LevelDebug)
 	runtime.GOMAXPROCS(2)
 	cpu_file, err := os.OpenFile("cpu.profile", os.O_CREATE|os.O_WRONLY, os.ModePerm)
 	if err != nil {
@@ -30,20 +28,7 @@ func main() {
 	}
 	pprof.WriteHeapProfile(mem_file)
 	//models.UpdateCategoryCount()
-	//go RunGC()
 	defer cache.ClosePool()
 	beego.Run()
-}
-
-func RunGC() {
-	logs.SetLevel(logs.LevelInfo)
-	t := time.NewTicker(5*time.Second)
-	for {
-		select {
-			case <-t.C:
-				runtime.GC()
-				logs.Debug("GC runned!")
-		}
-	}
 }
 

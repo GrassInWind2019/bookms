@@ -3,7 +3,6 @@ package controllers
 import (
 	"bookms/cache"
 	"bookms/models"
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"strconv"
 	"time"
@@ -22,14 +21,27 @@ func (c *UserController) FavoriteDo() {
 		Identify:identify,
 	}
 	if err := fav.FavoriteDo(); err != nil {
+		logs.Error("FavoriteDo: "+identify+" "+ err.Error())
 		c.JsonResult(500, err.Error())
 	}
-	//c.JsonResult(200, "收藏成功")
-	logs.Debug(beego.URLFor("GetBookController.GetBooksByIdentify"))
-	//c.Redirect(beego.URLFor("GetBookController.GetBooksByIdentify"), 302)
+	fav.Id = -1
+	isFav,err := fav.IsFavorite()
+	if err != nil {
+		logs.Error("IsFavorite ",err.Error())
+		cache.SetInt("is_fav-"+identify, isFav,600)
+	} else {
+		cache.SetInt("is_fav-"+identify, isFav,600)
+	}
 	url := "/bookdetail/"+identify
 	logs.Debug("AddCommentAndScore: redirect to "+url)
-	c.Redirect(url, 302)
+	//c.Redirect(url, 302)
+	var msg string
+	if 1 == isFav {
+		msg = "收藏成功"
+	} else {
+		msg = "取消收藏成功"
+	}
+	c.Success(msg,url, 1)
 }
 
 func (c *UserController) AddCommentAndScore() {
@@ -62,7 +74,8 @@ func (c *UserController) AddCommentAndScore() {
 			CreateTime:time.Now(),
 		}
 		if err := scoreObj.AddScore(); err != nil {
-			c.JsonResult(500, err.Error())
+			logs.Error("AddCommentAndScore: AddScore"+identify+" "+err.Error())
+			c.JsonResult(500, "评分失败")
 		}
 	}
 
@@ -73,14 +86,14 @@ func (c *UserController) AddCommentAndScore() {
 		CreateTime:time.Now(),
 	}
 	if err := comment.AddComment(); err != nil {
-		c.JsonResult(500, err.Error())
+		logs.Error("AddCommentAndScore: AddComment "+identify+ " "+ err.Error())
+		c.JsonResult(500, "添加评论失败")
 	}
-	//c.JsonResult(200, "发表成功")
-	logs.Debug(beego.URLFor("GetBookController.GetBooksByIdentify"))
-	//c.Redirect(beego.URLFor("GetBookController.GetBooksByIdentify"), 302)
+	cache.SetExpire("book_comments-"+identify, 0)
 	url := "/bookdetail/"+identify
 	logs.Debug("AddCommentAndScore: redirect to "+url)
-	c.Redirect(url, 302)
+	//c.Redirect(url, 302)
+	c.Success("发表评论成功",url, 1)
 }
 
 func (c *UserController) GetUserCenterInfo() {
@@ -221,7 +234,8 @@ func (c *UserController) GetUserCenterFav2() {
 	}
 	user,err := user.Find(c.Muser.Id)
 	if err != nil {
-		c.JsonResult(500, err.Error())
+		logs.Error("GetUserCenterFav2: ", err.Error())
+		c.JsonResult(500, "获取用户信息失败")
 	}
 	var page int
 	page,err = c.GetInt(":page", 1)
@@ -242,7 +256,8 @@ func (c *UserController) GetUserCenterFav2() {
 		logs.Debug("Get user favs ",err1.Error(),err2.Error())
 		user_favs, cnt, err = fav.ListFavoriteByUserIdReturnUserFav2(page,100)
 		if err != nil {
-			c.JsonResult(500, err.Error())
+			logs.Error("GetUserCenterFav2: ListFavoriteByUserIdReturnUserFav2 ", err.Error())
+			c.JsonResult(500, "获取收藏信息失败")
 		}
 		cache.SetInterface("user_favs-"+strconv.Itoa(c.Muser.Id), user_favs, 600)
 		cache.SetInt("user_favs_cnt-"+strconv.Itoa(c.Muser.Id), int(cnt), 600)
