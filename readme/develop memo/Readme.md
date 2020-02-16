@@ -60,3 +60,78 @@ select * from (select min(id) from `bookms_book_record` group by identify having
 ) order by id asc;
 
 ```
+
+## redis+lua原子操作  
+### zset基本操作  
+按分数从大到小排名1~5  
+zrevrangebyscore testzset 10 0 WITHSCORES LIMIT 0 5  
+按从小到大排名删除第1~2个成员    
+zremrangebyrank testzset 0 2  
+获取成员数量  
+zcard  testzset  
+获取指定成员排名  
+zrevrank testzset member  
+添加成员  
+zadd testzset 5 member  
+
+### redis调用lua脚本  
+#### EVAL命令格式  
+```
+EVAL script numkeys key [key ...] arg [arg ...]  
+语义  
+a. script即为lua脚本或lua脚本文件  
+b. key一般指lua脚本操作的键，在lua脚本文件中，通过KEYS[i]获取,i从1开始  
+c. arg指外部传递给lua脚本的参数，可以通过ARGV[i]获取,i从1开始  
+```
+#### EVAL示例  
+在cmd/powershell未连接redis使用redis-cli调用lua脚本命令示例如下，其中“BookScoreRank”为key，“5 5 5 test”为参数  
+```
+redis-cli.exe -a 123 --eval zsetop.lua BookScoreRank , 5 5 5 test  
+```
+在cmd/powershell已连接redis的cli中调用lua脚本命令示例如下,其中"1"表示key的数目，其他参数同上  
+```
+127.0.0.1:6379> eval zsetop.lua 1 BookScoreRank 5 5 5 test  
+```
+### redis log  
+用于发送日志（log）的 redis.log 函数，以及相应的日志级别（level）：
+redis.LOG_DEBUG
+redis.LOG_VERBOSE
+redis.LOG_NOTICE
+redis.LOG_WARNING
+默认redis server的Log级别为notice,在lua脚本中调用redis.log()打印的日志在server的日志中  
+```
+redis.log(redis.LOG_NOTICE, "list: ", lowestScore, lowestScoreMember)
+```
+用于计算 SHA1 校验和的 redis.sha1hex 函数。
+用于返回错误信息的 redis.error_reply 函数和 redis.status_reply 函数。
+
+### 开发遇到的错误  
+#### Lua redis() command arguments must be strings or integers  
+```
+lua := redis.NewScript(1, "local len = redis.call('zcard', KEYS[1]) " +
+		"if tonumber(len) >= tonumber(ARGV[1]) then " +
+		"local num = len-tonumber(ARGV[1])+1 " +
+		"local lowestScoreMember = redis.call('zrangebyscore',KEYS[1],0,ARGV[3],'limit',0,num) " +
+		"local lowestScore = redis.call('zscore', KEYS[1],lowestScoreMember) " +
+		"if tonumber(ARGV[2]) > tonumber(lowestScore) then " +
+		"local index = len - tonumber(ARGV[1]) " +
+		"redis.call('zremrangebyrank',KEYS[1], 0, index) end " +
+		"end " +
+		"redis.call('zadd', KEYS[1], ARGV[2], ARGV[4])")
+```
+其中"local lowestScoreMember = redis.call('zrangebyscore',KEYS[1],0,ARGV[3],'limit',0,num) " 返回的是list，故会出现如上错误  
+修改如下,使用"for k,lowestScoreMember in pairs(list) do "来处理list    
+```
+lua := redis.NewScript(1, "local len = redis.call('zcard', KEYS[1]) " +
+		"if tonumber(len) >= tonumber(ARGV[1]) then " +
+		"local num = len-tonumber(ARGV[1])+1 " +
+		"local list = redis.call('zrangebyscore',KEYS[1],0,ARGV[3],'limit',0,num) " +
+		"for k,lowestScoreMember in pairs(list) do " +
+		"local lowestScore = redis.call('zscore', KEYS[1],lowestScoreMember) " +
+		"if tonumber(ARGV[2]) > tonumber(lowestScore) then " +
+		"local index = len - tonumber(ARGV[1]) " +
+		"redis.call('zremrangebyrank',KEYS[1], 0, index) end " +
+		"end " +
+		"end " +
+		"redis.call('zadd', KEYS[1], ARGV[2], ARGV[4])")
+```
