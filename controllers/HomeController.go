@@ -6,6 +6,7 @@ import (
 	"bookms/utils"
 	"github.com/astaxie/beego/logs"
 	"strconv"
+	"time"
 )
 
 type HomeController struct {
@@ -59,6 +60,50 @@ func (c *HomeController) Index() {
 		}
 	}else {
 		logs.Debug("Get top category from cache")
+	}
+
+	topScoredBookStrs,err := cache.ZrevRangeByScore("BookScoreRank", 5, 0, 0, -1)
+	if err != nil {
+		logs.Error("ZrevRangeByScore: ", err.Error())
+	} else {
+		if len(topScoredBookStrs) > 0 {
+			logs.Debug("topScoredBookIds: ", topScoredBookStrs)
+			type ScoreBook struct {
+				BookName string
+				Identify   string
+				Cover string
+				Status int
+				CreateTime time.Time
+				DocCount int
+				AverageScore float32
+				Author string
+			}
+			var scoreBooks []ScoreBook
+			for _, bookStr := range topScoredBookStrs {
+				var book models.Book
+				//err = json.Unmarshal(*utils.UnsafeStringToBytes(bookStr), &book)
+				err = utils.Decode(bookStr, &book)
+				if err != nil {
+					logs.Error("Index: get top scored books Unmarshal "+bookStr+" "+err.Error())
+				} else {
+					scoreBook := ScoreBook{
+						BookName:book.BookName,
+						Identify:book.Identify,
+						Cover:book.Cover,
+						Status:book.Status,
+						CreateTime:book.CreateTime,
+						DocCount:book.DocCount,
+						AverageScore:float32(book.AverageScore)/10.0,
+						Author:book.Author,
+					}
+					scoreBooks = append(scoreBooks, scoreBook)
+				}
+			}
+			logs.Debug("scoreBooks: ", scoreBooks)
+			c.Data["TopScoredBooks"] = scoreBooks
+		} else {
+			c.Data["TopScoredBooks"] = []models.Book {}
+		}
 	}
 
 	c.Data["TopCategories"] = topCategories

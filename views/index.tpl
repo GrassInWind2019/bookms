@@ -57,6 +57,11 @@
       margin-right: auto;
       text-align: center;
     }
+    .top_scored_books{
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
     .index_books {
       width: 960px;
       margin-left: auto;
@@ -154,8 +159,23 @@
       </div>
       {{end}}
     </div>
+      {{if gt (.TopScoredBooks|len) 0}}
+      <div class="top_scored_books">
+          <font style="font-size: 28px;height:40px;line-height:48px;text-align: center">
+              评分排行：
+          </font>
+          {{range $i,$book:=.TopScoredBooks}}
+          <div style="height: 32px;font-size: 20px;text-align: center;">
+          评分{{$book.AverageScore}}{{$book}}
+          <a href="http://localhost:8080/bookdetail/{{$book.Identify}}">
+              <input type="button" value="查看此书详情"/>
+          </a>
+          </div>
+          {{end}}
+      </div>
+      {{end}}
     <div class="index_books">
-        <font style="font-size: 28px;height:40px;text-align: center">
+        <font style="font-size: 28px;height:40px;line-height:48px;text-align: center">
             首页图书：
         </font>
       {{range $idx,$HomeBook :=.HomeBooks}}
