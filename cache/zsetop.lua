@@ -1,6 +1,6 @@
 -- redis zset operations
 -- argv[capacity maxScore newMemberScore member]
--- 执行示例 eval zsetop.lua mtest , 3 5 5 test1
+-- 执行示例 redis-cli.exe --eval zsetop.lua mtest , 3 5 5 test1
 -- 获取键和参数
 local key,cap,maxSetScore,newMemberScore,member = KEYS[1],ARGV[1],ARGV[2],ARGV[3],ARGV[4]
 redis.log(redis.LOG_NOTICE, "key=", key,",cap=", cap,",maxSetScore=", maxSetScore,",newMemberScore=", newMemberScore,",member=", member)

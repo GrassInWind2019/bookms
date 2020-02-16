@@ -252,8 +252,7 @@ func (c *UserController) GetUserCenterFav2() {
 	}
 	user,err := user.Find(c.Muser.Id)
 	if err != nil {
-		logs.Error("GetUserCenterFav2: ", err.Error())
-		c.JsonResult(500, "获取用户信息失败")
+		c.JsonResult(500, err.Error())
 	}
 	var page int
 	page,err = c.GetInt(":page", 1)
@@ -263,42 +262,19 @@ func (c *UserController) GetUserCenterFav2() {
 	fav := models.Favorite{
 		UserId:c.Muser.Id,
 	}
-	var user_favs []*models.UserFavorite
-	var cnt int64
-	err1 := cache.GetInterface("user_favs-"+strconv.Itoa(c.Muser.Id), &user_favs)
-	err2, res := cache.GetInt("user_favs_cnt-"+strconv.Itoa(c.Muser.Id))
-	if err1 == nil && err2 == nil {
-		logs.Debug("Get user_favs-",strconv.Itoa(c.Muser.Id)," from cache")
-		cnt = int64(res)
-	} else {
-		logs.Debug("Get user favs ",err1.Error(),err2.Error())
-		user_favs, cnt, err = fav.ListFavoriteByUserIdReturnUserFav2(page,100)
-		if err != nil {
-			logs.Error("GetUserCenterFav2: ListFavoriteByUserIdReturnUserFav2 ", err.Error())
-			c.JsonResult(500, "获取收藏信息失败")
-		}
-		cache.SetInterface("user_favs-"+strconv.Itoa(c.Muser.Id), user_favs, 600)
-		cache.SetInt("user_favs_cnt-"+strconv.Itoa(c.Muser.Id), int(cnt), 600)
-	}
-
-	var is_admin int
-	err, is_admin = cache.GetInt("is_admin-"+strconv.Itoa(c.Muser.Id))
+	books, cnt, err := fav.ListFavoriteByUserIdReturnUserFav2(page,100)
 	if err != nil {
-		logs.Debug("Get is_admin",strconv.Itoa(c.Muser.Id),err.Error())
-		is_admin = user.IsAdmin()
-		c.Data["IsAdmin"] = is_admin
-		cache.SetInt("is_admin-"+strconv.Itoa(c.Muser.Id), is_admin)
-	} else {
-		c.Data["IsAdmin"] = is_admin
-		logs.Debug("Get is_admin",strconv.Itoa(c.Muser.Id)," from cache")
+		c.JsonResult(500, err.Error())
 	}
+	is_admin := user.IsAdmin()
+	c.Data["IsAdmin"] = is_admin
 
 	c.Data["UserInfo"] = *user
 	if 0 >= cnt {
 		c.Data["MyFavoriteCount"] = 0
 	} else {
 		c.Data["MyFavoriteCount"] = cnt
-		c.Data["MyFavorite"] = user_favs
+		c.Data["MyFavorite"] = books
 	}
 	c.TplName = "user/userCenter.html"
 }
