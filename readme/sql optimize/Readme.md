@@ -1,4 +1,12 @@
 # sql 优化操作流程  
+## 需要修改的代码部分  
+```
+1.将routers/router.go中beego.Router("/usercenter/:page", &controllers.UserController{}, "*:GetUserCenter")改为
+   beego.Router("/usercenter/:page", &controllers.UserController{}, "*:GetUserCenterInfo")
+2.将main.go中logs.SetLevel(logs.LevelDebug)改为
+  logs.SetLevel(logs.LevelWarn)
+3.将conf/app.conf中runmode = dev注释或删除，排除beego的log对测试的影响
+```
 ## 创建bookms所需数据库及表 
 先通过optimize.sql创建数据库及表，执行完毕后，管理员账号为GrassInWind, 密码123 
 然后运行bookms（Goland/liteIDE 运行main即可）测试端口号为8080 
