@@ -6,6 +6,8 @@
 2.将main.go中logs.SetLevel(logs.LevelDebug)改为
   logs.SetLevel(logs.LevelWarn)
 3.将conf/app.conf中runmode = dev注释或删除，排除beego的log对测试的影响
+  将db_uw_database=bookms_user改为db_uw_database=bookms
+  将db_ur_database=bookms_user改为db_ur_database=bookms
 ```
 ## 创建bookms所需数据库及表 
 先通过optimize.sql创建数据库及表，执行完毕后，管理员账号为GrassInWind, 密码123 
@@ -26,7 +28,7 @@
 '11', '4', '其他技术', '其他技术类书籍', '506208', '15', '0', ''
 ```
 ## 构造测试数据集 
-执行book_user_favorite.sql生成100万测试数据 
+执行book_user_favorite.sql生成100万测试数据（执行非常耗时，我的机器AMD Ryzen 5 3500U处理器，4核12G内存超过9小时） 
 ## 通过apachebench工具进行压测 
 压测命令见下图： 
 其中-c代表并发数，-n代表测试次数，-C表示用户cookie（可通过谷歌浏览器按下f12登录后即可查看到cookie信息） 
