@@ -9,6 +9,7 @@ bookms是一个简易的图书管理系统。
 API: /usercenterfav/201  
 sql示例： 
 ```
+select id,user_id,identify from bookms_book_record where user_id=1 limit 100 offset 20000  
 mysql> explain select f.id,f.user_id,f.identify,b.book_name,b.cover,b.author,bc.category_id,c.category_name,
 (case when r.lend_status=0 then '可借' 
 when r.lend_status=5 then '已下架' 
