@@ -39,16 +39,14 @@
 API: /usercenter/201 
 sql示例： 
 ```
-mysql> explain select * from bookms_book 
-inner join(select identify from bookms_user_favorite where user_id=1 limit 100 offset 20000) as book_fav using(identify);
-+----+-------------+----------------------+------------+--------+---------------+----------+---------+-------+--------+----------+-----------------------+
-| id | select_type | table                | partitions | type   | possible_keys | key      | key_len | ref   | rows   | filtered | Extra                 |
-+----+-------------+----------------------+------------+--------+---------------+----------+---------+-------+--------+----------+-----------------------+
-|  1 | PRIMARY     | <derived2>           | NULL       | ALL    | NULL          | NULL     | NULL    | NULL  |  20100 |   100.00 | NULL                  |
-|  1 | PRIMARY     | bookms_book          | NULL       | eq_ref | identify      | identify | 402     | func  |      1 |   100.00 | Using index condition |
-|  2 | DERIVED     | bookms_user_favorite | NULL       | ref    | user_id       | user_id  | 4       | const | 101405 |   100.00 | NULL                  |
-+----+-------------+----------------------+------------+--------+---------------+----------+---------+-------+--------+----------+-----------------------+
-3 rows in set, 1 warning (0.00 sec)
+explain select b.* from bookms_book b left join bookms_user_favorite f on f.identify=b.identify where user_id=1 limit 100 offset 20000;
++----+-------------+-------+------------+--------+---------------+----------+---------+------+--------+----------+-----------------------+
+| id | select_type | table | partitions | type   | possible_keys | key      | key_len | ref  | rows   | filtered | Extra                 |
++----+-------------+-------+------------+--------+---------------+----------+---------+------+--------+----------+-----------------------+
+|  1 | SIMPLE      | f     | NULL       | ALL    | NULL          | NULL     | NULL    | NULL | 202810 |    10.00 | Using where           |
+|  1 | SIMPLE      | b     | NULL       | eq_ref | identify      | identify | 402     | func |      1 |   100.00 | Using index condition |
++----+-------------+-------+------------+--------+---------------+----------+---------+------+--------+----------+-----------------------+
+2 rows in set, 1 warning (0.00 sec)
 ```
 apache bench压测结果：QPS为17  
 ```
