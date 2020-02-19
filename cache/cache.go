@@ -16,6 +16,7 @@ const zsetopFileName  = "cache/zsetop.lua"
 var (
 	pool *redis.Pool
 	zsetopScript string
+	lua *redis.Script
 )
 
 func init() {
@@ -60,6 +61,7 @@ func init() {
 	}
 	zsetopScript = utils.UnsafeBytesToString(bytes)
 	logs.Debug(zsetopScript)
+	lua =redis.NewScript(1,zsetopScript)
 }
 
 func ClosePool() (err error) {
@@ -209,7 +211,7 @@ func ZaddWithCap(key,member string, score float32, maxScore, cap int) (reply int
 	c := pool.Get()
 	//eval zsetop.lua mtest , 3 5 5 test1
 	//reply, err = c.Do("eval",zsetopScript,1,key,cap,maxScore,score,member)
-	lua :=redis.NewScript(1,zsetopScript)
+	//Do optimistically evaluates the script using the EVALSHA command. If script not exist, will use eval command.
 	reply, err= lua.Do(c,key,cap,maxScore,score,member)
 	return
 }
