@@ -92,7 +92,41 @@ redis-cli.exe -a 123 --eval zsetop.lua BookScoreRank , 5 5 5 test
 ```
 127.0.0.1:6379> eval zsetop.lua 1 BookScoreRank 5 5 5 test  
 ```
-### redis log  
+#### script命令  
+redis提供了以下几个script命令，用于对于脚本子系统进行控制：
+
+script flush：清除所有的脚本缓存
+
+script load：将脚本装入脚本缓存，不立即运行并返回其校验和
+
+script exists：根据指定脚本校验和，检查脚本是否存在于缓存
+
+script kill：杀死当前正在运行的脚本（防止脚本运行缓存，占用内存）
+
+主要优势：  
+减少网络开销：多个请求通过脚本一次发送，减少网络延迟
+
+原子操作：将脚本作为一个整体执行，中间不会插入其他命令，无需使用事务
+
+复用：客户端发送的脚本永久存在redis中，其他客户端可以复用脚本
+
+可嵌入性：可嵌入JAVA，C#等多种编程语言，支持不同操作系统跨平台交互
+
+通过script命令加载及执行lua脚本示例：
+```
+127.0.0.1:6379> script load "return 'Hello GrassInWind'"
+"c66be1d9b54b3182f8d8e12f8b01a4e5c7c4af5b"
+127.0.0.1:6379> script exists "c66be1d9b54b3182f8d8e12f8b01a4e5c7c4af5b"
+1) (integer) 1
+127.0.0.1:6379> evalsha "c66be1d9b54b3182f8d8e12f8b01a4e5c7c4af5b" 0
+"Hello GrassInWind"
+127.0.0.1:6379> script flush
+OK
+127.0.0.1:6379> script exists "c66be1d9b54b3182f8d8e12f8b01a4e5c7c4af5b"
+1) (integer) 0
+```
+
+#### redis log  
 用于发送日志（log）的 redis.log 函数，以及相应的日志级别（level）：
 redis.LOG_DEBUG
 redis.LOG_VERBOSE
