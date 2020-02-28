@@ -9,7 +9,89 @@ func Decode(value string, r interface{}) error {
 	return dec.Decode(r)
 }
 ```
+## byte切片转string  
+通过unsafe包将byte切片转换为string效率比直接使用string([]byte)要高。  
+```
+func UnsafeBytesToString(bytes []byte) string {
+	hdr := &reflect.StringHeader{
+		Data: uintptr(unsafe.Pointer(&bytes[0])),
+		Len:  len(bytes),
+	}
+	return *(*string)(unsafe.Pointer(hdr))
+}
+```
+反向转换如下：  
+```
+func UnsafeStringToBytes(str string) *[]byte {
+	string_header := (*reflect.StringHeader)(unsafe.Pointer(&str))
+	bytes_header := &reflect.SliceHeader{
+		Data:string_header.Data,
+		Len: string_header.Len,
+		Cap: string_header.Len,
+	}
+	return (*[]byte)(unsafe.Pointer(bytes_header))
+}
+```
+string与slice底层结构如下： 
+```
+type SliceHeader struct {
+	Data uintptr
+	Len  int
+	Cap  int
+  } 
+type StringHeader struct {
+	Data uintptr
+	Len  int
+  }
+```
+## unsafe包  
+unsafe 包提供了 2 点重要的能力：
+1. 任何类型的指针和 unsafe.Pointer 可以相互转换。
+2. uintptr 类型和 unsafe.Pointer 可以相互转换。
+### Offsetof 获取成员偏移量  
+```
+package main
+import (
+"fmt"
+"unsafe"
+)
+type Programmer struct {
+name string
+language string
+}
+func main() {
+p := Programmer{"stefno", "go"}
+fmt.Println(p)
+name := (*string)(unsafe.Pointer(&p))
+*name = "qcrao"
+lang := (*string)(unsafe.Pointer(uintptr(unsafe.Pointer(&p)) + unsafe.Offsetof(p.language)))
+*lang = "Golang"
+fmt.Println(p)
+}
+```
+运行代码，输出：  
+{stefno go}  
+{qcrao Golang}  
+### unsafe.Sizeof()   
+```
+type Programmer struct {
+name string
+age int
+language string
+}
+func main() {
+p := Programmer{"stefno", 18, "go"}
+fmt.Println(p)
+lang := (*string)(unsafe.Pointer(uintptr(unsafe.Pointer(&p)) + unsafe.Sizeof(int(0)) + unsafe.Sizeof(string(""))))
+*lang = "Golang"
+fmt.Println(p)
+}
+```
+输出： 
+{stefno 18 go}  
+{stefno 18 Golang}  
 
+参考： 深度解密Go语言之unsafe https://www.sohu.com/a/319106990_657921  
 ## 不打开新窗口访问url 
 ```
 location.replace("http://www.csdn.net");
