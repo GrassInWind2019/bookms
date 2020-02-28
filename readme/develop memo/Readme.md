@@ -46,8 +46,9 @@ type StringHeader struct {
 ```
 ## unsafe包  
 unsafe 包提供了 2 点重要的能力：
-1. 任何类型的指针和 unsafe.Pointer 可以相互转换。
-2. uintptr 类型和 unsafe.Pointer 可以相互转换。
+1. 任何类型的指针和 unsafe.Pointer 可以相互转换。  
+2. uintptr 类型和 unsafe.Pointer 可以相互转换。  
+![unsafe.Pointer.png](https://github.com/GrassInWind2019/bookms/master/readme/develop%20memo/unsafe.Pointer.png)
 ### Offsetof 获取成员偏移量  
 ```
 package main
