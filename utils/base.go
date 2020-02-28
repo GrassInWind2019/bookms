@@ -15,6 +15,10 @@ func UnsafeBytesToString(bytes []byte) string {
 	return *(*string)(unsafe.Pointer(hdr))
 }
 
+func BytesToString(bytes []byte) string {
+	return string(bytes)
+}
+
 func UnsafeStringToBytes(str string) *[]byte {
 	string_header := (*reflect.StringHeader)(unsafe.Pointer(&str))
 	bytes_header := &reflect.SliceHeader{
