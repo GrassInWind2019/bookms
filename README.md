@@ -109,7 +109,29 @@ db=0
 管理员在个人中心页面可通过添加图书按钮添加 
 ### nginx配置 
 nginx配置文件见nginx_conf目录，本人所用nginx版本为nginx-1.16.1。 
-
+通过nginx -t检查配置文件有没有问题。  
+### nginx使用 
+1. 为了使用nginx,需要以不同的端口运行多个bookms。使用beego的bee工具通过在项目目录下执行bee pack即可完成打包bookms运行所需要的文件。  
+2. 将bookms.tar.gz拷贝到两个目录并解压，修改conf/app.conf中“httpport = 8080”为不同的端口如8081,8082，然后直接运行bookms.exe。  
+3. 运行nginx（nginx配置端口8080），然后访问http://localhost:8080 即可访问bookms。  
+```
+dongs@LAPTOP-V7V47H0L MINGW64 /d/GoCode/study/bookms (master)
+$ bee pack
+______
+| ___ \
+| |_/ /  ___   ___
+| ___ \ / _ \ / _ \
+| |_/ /|  __/|  __/
+\____/  \___| \___| v1.10.0
+2020/02/28 11:35:07 INFO     ▶ 0001 Packaging application on 'D:\GoCode\study\bookms'...
+2020/02/28 11:35:07 INFO     ▶ 0002 Building application...
+2020/02/28 11:35:07 INFO     ▶ 0003 Using: GOOS=windows GOARCH=amd64
+2020/02/28 11:35:12 SUCCESS  ▶ 0004 Build Successful!
+2020/02/28 11:35:12 INFO     ▶ 0005 Writing to output: D:\GoCode\study\bookms\bookms.tar.gz
+2020/02/28 11:35:12 INFO     ▶ 0006 Excluding relpath prefix: .
+2020/02/28 11:35:12 INFO     ▶ 0007 Excluding relpath suffix: .go:.DS_Store:.tmp
+2020/02/28 11:35:16 SUCCESS  ▶ 0008 Application packed!
+```
 ## bookms收藏功能sql优化 
 ### 优化前 
 API: /usercenterfav/201  
